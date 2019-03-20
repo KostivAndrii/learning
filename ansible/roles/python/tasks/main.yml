@@ -1,0 +1,11 @@
+---
+- name: Searce for Pyhton | Changed if not found 
+  raw: bash -c "test -e /usr/bin/python || echo "nopython""
+  register: python
+  changed_when: python.stdout != ""
+
+- name: Install Python on debian
+  raw: bash -c "apt -y update && apt install -y python"
+  changed_when: true
+  when: python.changed
+

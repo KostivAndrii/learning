@@ -1,0 +1,41 @@
+---
+# tasks file for jdk
+
+    - name: coping jdk-8u*-linux-x64.tar.gz to optjdk-8u*-linux-x64.tar.gz 
+      copy:
+        src: "{{ jdk_arch }}"
+        dest: "/opt/"
+        owner: root
+        mode: 0644
+
+    - name: Unarchive jdk
+      unarchive:
+        src: "/opt/{{ jdk_arch }}"
+        dest: "/opt"
+        remote_src: yes
+      when: update_jdk
+
+    - name: "chown -R root: /opt/jdk1.8.0_*" 
+      file:
+        path: "/opt/jdk1.8.0_{{ jdk_version }}/"
+        owner: root
+        group: root
+        recurse: yes
+        state: directory
+
+    - name: "ln -s /opt/jdk1.8.0_* /opt/oracle_jdk"
+      file:
+        src: "/opt/jdk1.8.0_{{ jdk_version }}/"
+        dest: "{{ jdk_dest }}"
+        owner: root
+        group: root
+        state: link
+
+    - name: alternatives link created {java, javac, jar}
+      alternatives:
+        name: "{{ item }}"
+        link: "/usr/bin/{{ item }}"
+        path: "/opt/oracle_jdk/bin/{{ item }}"
+        priority: 2
+      loop: [ java, javac, jar ]
+

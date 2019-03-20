@@ -1,0 +1,41 @@
+---
+- include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+  
+- name: Create custom init scripts directory.
+  file:
+    path: "{{ jenkins_home }}/init.groovy.d"
+    state: directory
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+
+- name: Configure default users
+  template:
+    src: basic-security.groovy
+    dest: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0775
+
+- name: Ensure port is open
+  wait_for:
+    host: 0.0.0.0
+    port: 8080
+    delay: 1 
+    state: started  
+
+- name: restart jenkins
+  service:
+    name: jenkins
+    state: restarted
+
+- name: Ensure Jenkins is started and runs on startup.
+  service: 
+    name: jenkins 
+    state: started 
+    enabled: yes
+
