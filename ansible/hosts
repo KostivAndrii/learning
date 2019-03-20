@@ -1,0 +1,14 @@
+# Lines beginning with a # are comments, and are only included for
+# illustration. These comments are overkill for most inventory files.
+
+[jdk] 
+#centos2 ansible_host=192.168.237.51
+
+[jenkins]
+centosJ ansible_host=192.168.237.120
+ubuntuJ ansible_host=192.168.237.121
+
+# Variables that will be applied to all servers
+[all:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key

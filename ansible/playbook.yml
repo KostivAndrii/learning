@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: false
+  roles:
+    - python
+
+- hosts: jenkins
+  become: yes
+  gather_facts: true
+  roles:
+    - jenkins
+
