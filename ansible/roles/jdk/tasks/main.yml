@@ -1,41 +1,109 @@
 ---
 # tasks file for jdk
 
-    - name: coping jdk-8u*-linux-x64.tar.gz to optjdk-8u*-linux-x64.tar.gz 
-      copy:
-        src: "{{ jdk_arch }}"
-        dest: "/opt/"
-        owner: root
-        mode: 0644
+- name: copying jdk-8u*-linux-x64.tar.gz
+  copy:
+    src: "{{ offline_jdk_arch }}"
+    dest: "/opt/"
+    owner: root
+    mode: 0644
+  when: offline_jdk
 
-    - name: Unarchive jdk
-      unarchive:
-        src: "/opt/{{ jdk_arch }}"
-        dest: "/opt"
-        remote_src: yes
-      when: update_jdk
+- name: Unarchive jdk
+  unarchive:
+    src: "/opt/{{ offline_jdk_arch }}"
+    dest: "/opt"
+    remote_src: yes
+  when: 
+    - offline_jdk
+    - update_jdk
 
-    - name: "chown -R root: /opt/jdk1.8.0_*" 
-      file:
-        path: "/opt/jdk1.8.0_{{ jdk_version }}/"
-        owner: root
-        group: root
-        recurse: yes
-        state: directory
+- name: "chown -R root: /opt/jdk1.8.0_*" 
+  file:
+    path: "/opt/jdk1.8.0_{{ offline_jdk_version }}/"
+    owner: root
+    group: root
+    recurse: yes
+    state: directory
+  when: offline_jdk
 
-    - name: "ln -s /opt/jdk1.8.0_* /opt/oracle_jdk"
-      file:
-        src: "/opt/jdk1.8.0_{{ jdk_version }}/"
-        dest: "{{ jdk_dest }}"
-        owner: root
-        group: root
-        state: link
+- name: "ln -s /opt/jdk1.8.0_* /opt/oracle_jdk"
+  file:
+    src: "/opt/jdk1.8.0_{{ offline_jdk_version }}/"
+    dest: "{{ offline_jdk_dest }}"
+    owner: root
+    group: root
+    state: link
+  when: offline_jdk
 
-    - name: alternatives link created {java, javac, jar}
-      alternatives:
-        name: "{{ item }}"
-        link: "/usr/bin/{{ item }}"
-        path: "/opt/oracle_jdk/bin/{{ item }}"
-        priority: 2
-      loop: [ java, javac, jar ]
+- name: alternatives link created {java, javac, jar}
+  alternatives:
+    name: "{{ item }}"
+    link: "/usr/bin/{{ item }}"
+    path: "/opt/oracle_jdk/bin/{{ item }}"
+    priority: 2
+  loop: [ java, javac, jar ]
+  when: offline_jdk
+
+- name: Ensure Java is installed for RedHat. java-1.{{ online_jdk_version | default(8) }}.0-openjdk
+  yum:
+    name: "java-1.{{ online_jdk_version | default(8) }}.0-openjdk" 
+    state: present
+  when: 
+    - ansible_os_family == 'RedHat' 
+    - not offline_jdk
+
+#- name: Update and upgrade apt packages
+#  become: true
+#  apt:
+#    upgrade: yes
+#    update_cache: yes
+#  when:
+#    - ansible_os_family == 'Debian'
+
+- name: install python-software-properties
+  apt: 
+    name: python-software-properties
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - not offline_jdk
+    - online_jdk_version == 7
+
+- name: Add Java apt repository.
+  apt_repository:
+    repo: "ppa:openjdk-r/ppa"
+    state: present
+    update_cache: true
+  when: 
+    - ansible_os_family == 'Debian'
+    - not offline_jdk
+    - online_jdk_version == 7
+
+- name: Update and upgrade apt packages
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400
+  when:
+    - ansible_os_family == 'Debian'
+
+- name: Ensure Java 1.7 is installed for Debian.
+  apt:
+    name: openjdk-7-jdk
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - not offline_jdk
+    - online_jdk_version == 7
+
+- name: Ensure Java 1.8 is installed for Debian.
+  apt:
+    name: "openjdk-{{ online_jdk_version | default(8) }}-jdk"
+    state: present
+  when: 
+    - ansible_os_family == 'Debian' 
+    - not offline_jdk
+    - online_jdk_version == 8
 

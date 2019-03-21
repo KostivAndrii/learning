@@ -5,8 +5,9 @@
 #centos2 ansible_host=192.168.237.51
 
 [jenkins]
-centosJ ansible_host=192.168.237.120
-ubuntuJ ansible_host=192.168.237.121
+ubuntu ansible_host=192.168.237.121
+centos ansible_host=192.168.237.120
+#ubuntu ansible_host=192.168.237.121
 
 # Variables that will be applied to all servers
 [all:vars]

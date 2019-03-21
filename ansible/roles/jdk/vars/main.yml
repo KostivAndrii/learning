@@ -1,8 +1,11 @@
 ---
 # vars file for jdk
 
-jdk_version: 201
-jdk_arch: jdk-8u{{ jdk_version }}-linux-x64.tar.gz
-jdk_dest: /opt/oracle_jdk
+#online_jdk_version: 8
+
+#offline_jdk: true
+offline_jdk_version: 201
+offline_jdk_arch: jdk-8u{{ offline_jdk_version }}-linux-x64.tar.gz
+offline_jdk_dest: /opt/oracle_jdk
 
 update_jdk: true
