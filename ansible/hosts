@@ -1,13 +1,9 @@
 # Lines beginning with a # are comments, and are only included for
 # illustration. These comments are overkill for most inventory files.
 
-[jdk] 
-#centos2 ansible_host=192.168.237.51
-
 [jenkins]
 ubuntu ansible_host=192.168.237.121
 centos ansible_host=192.168.237.120
-#ubuntu ansible_host=192.168.237.121
 
 # Variables that will be applied to all servers
 [all:vars]

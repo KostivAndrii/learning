@@ -7,7 +7,7 @@
     dest: "/opt/"
     owner: root
     mode: 0644
-  when: offline_jdk
+  when: not online_jdk
 
 - name: Unarchive jdk
   unarchive:
@@ -15,8 +15,7 @@
     dest: "/opt"
     remote_src: yes
   when: 
-    - offline_jdk
-    - update_jdk
+    - not online_jdk
 
 - name: "chown -R root: /opt/jdk1.8.0_*" 
   file:
@@ -25,7 +24,7 @@
     group: root
     recurse: yes
     state: directory
-  when: offline_jdk
+  when: not online_jdk
 
 - name: "ln -s /opt/jdk1.8.0_* /opt/oracle_jdk"
   file:
@@ -34,7 +33,7 @@
     owner: root
     group: root
     state: link
-  when: offline_jdk
+  when: not online_jdk
 
 - name: alternatives link created {java, javac, jar}
   alternatives:
@@ -43,7 +42,7 @@
     path: "/opt/oracle_jdk/bin/{{ item }}"
     priority: 2
   loop: [ java, javac, jar ]
-  when: offline_jdk
+  when: not online_jdk
 
 - name: Ensure Java is installed for RedHat. java-1.{{ online_jdk_version | default(8) }}.0-openjdk
   yum:
@@ -51,15 +50,7 @@
     state: present
   when: 
     - ansible_os_family == 'RedHat' 
-    - not offline_jdk
-
-#- name: Update and upgrade apt packages
-#  become: true
-#  apt:
-#    upgrade: yes
-#    update_cache: yes
-#  when:
-#    - ansible_os_family == 'Debian'
+    - online_jdk
 
 - name: install python-software-properties
   apt: 
@@ -67,7 +58,7 @@
     state: present
   when:
     - ansible_os_family == 'Debian'
-    - not offline_jdk
+    - online_jdk
     - online_jdk_version == 7
 
 - name: Add Java apt repository.
@@ -77,7 +68,7 @@
     update_cache: true
   when: 
     - ansible_os_family == 'Debian'
-    - not offline_jdk
+    - online_jdk
     - online_jdk_version == 7
 
 - name: Update and upgrade apt packages
@@ -88,6 +79,7 @@
     cache_valid_time: 86400
   when:
     - ansible_os_family == 'Debian'
+    - online_jdk
 
 - name: Ensure Java 1.7 is installed for Debian.
   apt:
@@ -95,15 +87,15 @@
     state: present
   when:
     - ansible_os_family == 'Debian'
-    - not offline_jdk
+    - online_jdk
     - online_jdk_version == 7
 
 - name: Ensure Java 1.8 is installed for Debian.
   apt:
-    name: "openjdk-{{ online_jdk_version | default(8) }}-jdk"
+    name: "openjdk-8-jdk"
     state: present
   when: 
     - ansible_os_family == 'Debian' 
-    - not offline_jdk
+    - online_jdk
     - online_jdk_version == 8
 
