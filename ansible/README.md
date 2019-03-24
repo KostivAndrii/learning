@@ -1,6 +1,6 @@
 Ansible role to setup and configure Jenkins + separated Java role in dependencies.
 
-In Role Default Variables it's possible to set
+In Role Default Variables it's possible to change/set:
 
    **jenkins_admin_username**
    
@@ -20,7 +20,7 @@ or
 
 
 
-Java role can offline install JDK - for this:
+Java role can be configured to install JDK **offline** - to do this:
  
 1. You can change JDK version to install in java/vars/main.yml variables:
 
@@ -33,7 +33,7 @@ Java role can offline install JDK - for this:
 
 Also Java role able to online install JDK 1.8 or 1.7 into RedHat or Debian family Linux.
 
-To do this necessarily pass role appropriate variables:
+To do this necessarily pass to role appropriate variables:
 
 >  - role: java
 >  
