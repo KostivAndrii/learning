@@ -1,13 +1,13 @@
 ---
-- name: Include OS-Specific variables
+- name: Include OS-Specific rpm-key and yum_repository
   include_vars: RedHat.yml
 
-- name: Add jenkins apt-key
+- name: Add jenkins rpm-key
   rpm_key: 
     key: "{{ key_url }}"
     state: present
 
-- name: Add Jenkins apt repository.
+- name: Add Jenkins yum_repository
   yum_repository:
     name: Jenkins-stable
     description: jenkins 

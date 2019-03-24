@@ -2,5 +2,5 @@
 dependencies:
   - role: java
     vars:
-      online_jdk: true
+      online_jdk: false 
       online_jdk_version: 8 

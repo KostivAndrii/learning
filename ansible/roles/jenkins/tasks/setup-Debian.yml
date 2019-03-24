@@ -1,5 +1,5 @@
 ---
-- name: Include OS-Specific variables
+- name: Include OS-Specific apt-key and apt_repository
   include_vars: Debian.yml
 
 - name: Add jenkins apt-key
@@ -7,7 +7,7 @@
     url: "{{ key_url }}"
     state: present
 
-- name: Add Jenkins apt repository.
+- name: Add Jenkins apt_repository
   apt_repository:
     repo: "{{ jenkins_repo_url }}"
     state: present
