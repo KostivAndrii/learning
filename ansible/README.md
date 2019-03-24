@@ -24,12 +24,12 @@ Java role can be configured to install JDK **offline** - to do this:
  
 1. You can change JDK version to install in java/vars/main.yml variables:
 
->   **offline_jdk_version: 201**
+>   offline_jdk_version: 201
 
 
 1. And you should place in folder role/java/files appropriate version JDK archive file:
 
->      **jdk-8u201-linux-x64.tar.gz**
+>      jdk-8u201-linux-x64.tar.gz
 
 Also Java role able to online install JDK 1.8 or 1.7 into RedHat or Debian family Linux.
 
