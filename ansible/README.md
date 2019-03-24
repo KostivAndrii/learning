@@ -6,7 +6,8 @@ In Role Default Variables it's possible to set
    
    **jenkins_admin_password**
    
-Password stored in $ANSIBLE_VAULT - you should set your own password with or without VAULT.
+
+Password for jenkins admin user stored in $ANSIBLE_VAULT - you should set your own password with or without VAULT.
 
 To run this playbook you should setup 2 VM with present Vagrantfile and run playbook.yml with keys
 
@@ -15,6 +16,8 @@ To run this playbook you should setup 2 VM with present Vagrantfile and run play
 or 
 
 >   --vault-password-file=~/.passfile
+
+
 
 
 Java role can offline install JDK - for this:
