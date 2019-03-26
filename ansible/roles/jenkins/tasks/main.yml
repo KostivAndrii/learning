@@ -4,7 +4,7 @@
 
 - include_tasks: setup-Debian.yml
   when: ansible_os_family == 'Debian'
-  
+
 - name: Create custom init scripts directory.
   file:
     path: "{{ jenkins_home }}/init.groovy.d"
@@ -21,12 +21,85 @@
     group: "{{ jenkins_group }}"
     mode: 0775
 
+- name: "check accessibility http://localhost:8080"
+  uri:
+    url: http://localhost:8080
+  register: HTTP_code
+  failed_when: 
+
+- debug: var=HTTP_code.status
+
 - name: Ensure port is open
   wait_for:
     host: 0.0.0.0
     port: 8080
-    delay: 1 
-    state: started  
+    delay: 5
+    state: started
+
+- name: "check accessibility http://localhost:8080"
+  uri:
+    url: http://localhost:8080
+  register: HTTP_code
+
+- debug: var=HTTP_code.status
+
+- name: Ensure port is open
+  wait_for:
+    host: 0.0.0.0
+    port: 8080
+    delay: 5
+    state: started
+
+- name: "check accessibility http://localhost:8080"
+  uri:
+    url: http://localhost:8080
+  register: HTTP_code
+
+- debug: var=HTTP_code.status
+
+- name: Ensure port is open
+  wait_for:
+    host: 0.0.0.0
+    port: 8080
+    delay: 5
+    state: started
+
+- name: "check accessibility http://localhost:8080"
+  uri:
+    url: http://localhost:8080
+  register: HTTP_code
+
+- debug: var=HTTP_code.status
+
+
+# - name: Check that you can connect (GET) to a page and has apropriate content.
+#   uri:
+#     url: http://192.168.60.4:8888/sample/
+#     return_content: yes
+#   register: page
+#   failed_when: "'illustrate' not in page.content"
+
+# - name: ensure port is open
+#   wait_for:
+#     host: 0.0.0.0
+#     port: 80
+#     delay: 5
+#     state: started
+
+# - name: "check accessibility http://tomcat_servers:{{ tomcat_server_port }}/sample/"
+#   uri:
+#     url: http://{{ ansible_host }}
+#   register: HTTP_code
+
+# - debug: var=HTTP_code.status
+
+# - name: "check accessibility http://tomcat_servers:{{ tomcat_server_port }}/sample/"
+#   uri:
+#     url: http://{{ ansible_host }}:{{ tomcat_server_port }}/sample/
+#   register: HTTP_code
+
+# - debug: var=HTTP_code.status
+
 
 - name: restart jenkins
   service:
@@ -34,8 +107,8 @@
     state: restarted
 
 - name: Ensure Jenkins is started and runs on startup.
-  service: 
-    name: jenkins 
-    state: started 
+  service:
+    name: jenkins
+    state: started
     enabled: yes
 

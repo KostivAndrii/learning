@@ -1,6 +1,9 @@
 ---
 # tasks file for java
-- name: offline Java installiation - copying source from local dir 
+- debug:
+    msg: "online_jdk: {{ online_jdk }}, jdk_version: {{ jdk_version }}"
+
+- name: offline Java installiation - copying source from local dir
   include_tasks: offlineJava.yml
   when: not online_jdk
 
@@ -9,7 +12,7 @@
   when:
     - ansible_os_family == 'Debian'
     - online_jdk
-    - online_jdk_version == 7
+    - jdk_version == 7
 
 - name: Ensure Java 1.8 is installed for Debian.
   apt:
@@ -18,13 +21,13 @@
   when:
     - ansible_os_family == 'Debian'
     - online_jdk
-    - online_jdk_version == 8
+    - jdk_version == 8
 
-- name: Ensure Java is installed for RedHat. java-1.{{ online_jdk_version | default(8) }}.0-openjdk
+- name: Ensure Java is installed for RedHat. java-1.{{ jdk_version | default(8) }}.0-openjdk
   yum:
-    name: "java-1.{{ online_jdk_version | default(8) }}.0-openjdk" 
+    name: "java-1.{{ jdk_version | default(8) }}.0-openjdk"
     state: present
-  when: 
-    - ansible_os_family == 'RedHat' 
+  when:
+    - ansible_os_family == 'RedHat'
     - online_jdk
 

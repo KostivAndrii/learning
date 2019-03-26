@@ -2,20 +2,26 @@
 # tasks file for offline Java instalation
 - name: copying jdk-8u*-linux-x64.tar.gz
   copy:
-    src: "{{ offline_jdk_arch }}"
+    src: "{{ jdk_arch }}"
     dest: "/opt/"
     owner: root
     mode: 0644
 
+- name: check jdk folder if exist
+  stat:
+    path: "/opt/jdk1.8.0_{{ jdk_sub_version }}/"
+  register: jdk_dir
+
 - name: Unarchive jdk
   unarchive:
-    src: "/opt/{{ offline_jdk_arch }}"
+    src: "/opt/{{ jdk_arch }}"
     dest: "/opt"
     remote_src: yes
+  when: not ( jdk_dir.stat.exists and jdk_dir.stat.isdir )
 
-- name: "chown -R root: /opt/jdk1.8.0_*" 
+- name: "chown -R root: /opt/jdk1.8.0_*"
   file:
-    path: "/opt/jdk1.8.0_{{ offline_jdk_version }}/"
+    path: "/opt/jdk1.8.0_{{ jdk_sub_version }}/"
     owner: root
     group: root
     recurse: yes
@@ -23,8 +29,8 @@
 
 - name: "ln -s /opt/jdk1.8.0_* /opt/oracle_jdk"
   file:
-    src: "/opt/jdk1.8.0_{{ offline_jdk_version }}/"
-    dest: "{{ offline_jdk_dest }}"
+    src: "/opt/jdk1.8.0_{{ jdk_sub_version }}/"
+    dest: "{{ jdk_dest }}"
     owner: root
     group: root
     state: link

@@ -10,4 +10,6 @@
   gather_facts: true
   roles:
     - jenkins
-
+  vars:
+    online_jdk: false
+    jdk_version: 8
