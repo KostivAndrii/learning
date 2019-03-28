@@ -20,95 +20,94 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
+#  notify: restart jenkins
 
-- name: "check accessibility http://localhost:8080"
-  uri:
-    url: http://localhost:8080
-  register: HTTP_code
-  failed_when: 
-
-- debug: var=HTTP_code.status
-
-- name: Ensure port is open
-  wait_for:
-    host: 0.0.0.0
-    port: 8080
-    delay: 5
-    state: started
-
-- name: "check accessibility http://localhost:8080"
-  uri:
-    url: http://localhost:8080
-  register: HTTP_code
-
-- debug: var=HTTP_code.status
-
-- name: Ensure port is open
-  wait_for:
-    host: 0.0.0.0
-    port: 8080
-    delay: 5
-    state: started
-
-- name: "check accessibility http://localhost:8080"
-  uri:
-    url: http://localhost:8080
-  register: HTTP_code
-
-- debug: var=HTTP_code.status
-
-- name: Ensure port is open
-  wait_for:
-    host: 0.0.0.0
-    port: 8080
-    delay: 5
-    state: started
-
-- name: "check accessibility http://localhost:8080"
-  uri:
-    url: http://localhost:8080
-  register: HTTP_code
-
-- debug: var=HTTP_code.status
-
-
-# - name: Check that you can connect (GET) to a page and has apropriate content.
-#   uri:
-#     url: http://192.168.60.4:8888/sample/
-#     return_content: yes
-#   register: page
-#   failed_when: "'illustrate' not in page.content"
-
-# - name: ensure port is open
-#   wait_for:
-#     host: 0.0.0.0
-#     port: 80
-#     delay: 5
-#     state: started
-
-# - name: "check accessibility http://tomcat_servers:{{ tomcat_server_port }}/sample/"
-#   uri:
-#     url: http://{{ ansible_host }}
-#   register: HTTP_code
-
-# - debug: var=HTTP_code.status
-
-# - name: "check accessibility http://tomcat_servers:{{ tomcat_server_port }}/sample/"
-#   uri:
-#     url: http://{{ ansible_host }}:{{ tomcat_server_port }}/sample/
-#   register: HTTP_code
-
-# - debug: var=HTTP_code.status
-
-
-- name: restart jenkins
-  service:
+- name: enable jenkins
+  systemd:
     name: jenkins
-    state: restarted
+    enabled: true
 
-- name: Ensure Jenkins is started and runs on startup.
+- name: start jenkins
   service:
     name: jenkins
     state: started
     enabled: yes
 
+# - name: Ensure port is open
+#   wait_for:
+#     host: 0.0.0.0
+#     port: 8080
+#     state: started
+
+- name: "wait for HTTP 200 accessibility http://localhost:8080 - first time for apply user init"
+  uri:
+    url: http://localhost:8080/login?from=%2F
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 10
+
+- name: restart jenkins
+  service:
+    name:  jenkins
+    state: restarted
+
+- name: "wait for HTTP 200 accessibility http://localhost:8080"
+  uri:
+    url: http://localhost:8080/login?from=%2F
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 10
+
+- name: Remove Jenkins security init scripts after first startup.
+  file:
+    path: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
+    state: absent
+
+- name: disable setup wizard
+  jenkins_script:
+    script: |
+      import static jenkins.model.Jenkins.instance as jenkins
+      import jenkins.install.InstallState
+      if (!jenkins.installState.isSetupComplete()) {
+        InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+      }
+    user: "{{ jenkins_admin_username }}"
+    password: "{{ jenkins_admin_password }}"
+
+- name: Install Jenkins plugins using password.
+  jenkins_plugin:
+    name: "{{ item }}"
+    jenkins_home: "{{ jenkins_home }}"
+    url_username: "{{ jenkins_admin_username }}"
+    url_password: "{{ jenkins_admin_password }}"
+#    state: present
+#    timeout: 30
+#    updates_expiration: 86400
+#    updates_url: "{{ jenkins_updates_url }}"
+#    url: "http://{{ jenkins_hostname }}:{{ jenkins_http_port }}{{ jenkins_url_prefix }}"
+    with_dependencies: true
+  with_items: "{{ jenkins_plugins }}"
+  notify: restart jenkins
+#  tags: ['skip_ansible_lint']
+  register: plugin_result
+  until: plugin_result is success
+  retries: 3
+  delay: 2
+
+- name: restart jenkins after disable setup wizard
+  service:
+    name:  jenkins
+    state: restarted
+
+- name: "wait for HTTP 200 accessibility http://localhost:8080"
+  uri:
+    url: http://localhost:8080/login?from=%2F
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 5

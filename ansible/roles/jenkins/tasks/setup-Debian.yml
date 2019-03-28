@@ -3,7 +3,7 @@
   include_vars: Debian.yml
 
 - name: Add jenkins apt-key
-  apt_key: 
+  apt_key:
     url: "{{ key_url }}"
     state: present
 
@@ -15,19 +15,8 @@
   when: jenkins_repo_url != ''
 
 - name: Install Jenkins
-  apt: 
-    name: jenkins 
-    state: latest 
-    update_cache: yes 
-    force: yes
-
-- name: enable jenkins
-  systemd:
+  apt:
     name: jenkins
-    enabled: true
-
-- name: restart jenkins
-  service: 
-    name: jenkins 
-    state: restarted
-
+    state: latest
+#    update_cache: yes
+    force: yes

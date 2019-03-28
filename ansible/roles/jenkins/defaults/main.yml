@@ -9,3 +9,34 @@ jenkins_admin_password: !vault |
 jenkins_home: /var/lib/jenkins
 jenkins_user: jenkins
 jenkins_group: jenkins
+
+jenkins_init_changes:
+  - option: "JENKINS_ARGS"
+    value: "--prefix={{ jenkins_url_prefix }}"
+  - option: "{{ jenkins_java_options_env_var }}"
+    value: "-Djenkins.install.runSetupWizard=false"
+
+
+jenkins_plugins:
+  - "ant"
+  - "github-branch-source"
+  - "ldap"
+  - "pipeline"
+  - "pipeline-github-lib"
+  - "pipeline-stage-view"
+  - "ssh-slaves"
+  - "email-ext"
+  - "git"
+  - "build-timeout"
+  - "matrix-auth"
+  - "antisamy-markup-formatter"
+  - "pam-auth"
+  - "timestamper"
+  - "svn-workspace-cleaner"
+  - "gradle"
+  - "credentials-binding"
+  - "cloudbees-folder"
+  - "subversion"
+  - "mailer"
+  - "maven-plugin"
+

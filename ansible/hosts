@@ -2,6 +2,7 @@
 # illustration. These comments are overkill for most inventory files.
 
 [jenkins]
+#tomcat ansible_host=192.168.237.55
 ubuntu ansible_host=192.168.237.121
 centos ansible_host=192.168.237.120
 
