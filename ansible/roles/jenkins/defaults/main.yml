@@ -18,15 +18,16 @@ jenkins_init_changes:
 
 
 jenkins_plugins:
+  - "git"
   - "ant"
   - "github-branch-source"
   - "ldap"
   - "pipeline"
   - "pipeline-github-lib"
   - "pipeline-stage-view"
+  - "build-pipeline-plugin"
   - "ssh-slaves"
   - "email-ext"
-  - "git"
   - "build-timeout"
   - "matrix-auth"
   - "antisamy-markup-formatter"
@@ -39,4 +40,14 @@ jenkins_plugins:
   - "subversion"
   - "mailer"
   - "maven-plugin"
+  - "workflow-aggregator"
 
+#  - "workflow-aggregator"
+#github-branch-source
+#pipeline-github-lib
+#pipeline-stage-view
+#build-pipeline-plugin
+#conditional-buildstep
+#jenkins-multijob-plugin
+#parameterized-trigger
+#copyartifact

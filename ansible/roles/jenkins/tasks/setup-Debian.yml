@@ -14,9 +14,12 @@
     update_cache: true
   when: jenkins_repo_url != ''
 
-- name: Install Jenkins
+- name: Install git and Jenkins
   apt:
-    name: jenkins
+    name: "{{ item }}"
     state: latest
 #    update_cache: yes
     force: yes
+  loop:
+    - jenkins
+    - git

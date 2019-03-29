@@ -20,7 +20,27 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
-#  notify: restart jenkins
+
+- name: coping Maven config file
+  copy:
+    src: "hudson.tasks.Maven.xml"
+    dest: "{{ jenkins_home }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0644
+
+- name: Ensure jenkins_home/jobs {{ jenkins_home }}/jobs exists
+  file:
+    path: "{{ jenkins_home }}/jobs/"
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: 0755
+
+- name: Unarchive jenkins job
+  unarchive:
+    src: mhw.tgz
+    dest: /var/lib/jenkins/jobs/
 
 - name: enable jenkins
   systemd:
@@ -92,7 +112,6 @@
     with_dependencies: true
   with_items: "{{ jenkins_plugins }}"
   notify: restart jenkins
-#  tags: ['skip_ansible_lint']
   register: plugin_result
   until: plugin_result is success
   retries: 3
