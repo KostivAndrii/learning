@@ -23,3 +23,14 @@
   loop:
     - jenkins
     - git
+
+- name: enable jenkins
+  systemd:
+    name: jenkins
+    enabled: true
+
+- name: start jenkins
+  service:
+    name: jenkins
+    state: started
+    enabled: yes

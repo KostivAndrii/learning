@@ -1,0 +1,49 @@
+---
+- name: disable setup wizard
+  jenkins_script:
+    script: |
+      import static jenkins.model.Jenkins.instance as jenkins
+      import jenkins.install.InstallState
+      if (!jenkins.installState.isSetupComplete()) {
+        InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+      }
+    user: "{{ jenkins_admin_username }}"
+    password: "{{ jenkins_admin_password }}"
+
+- name: Install Jenkins plugins using password.
+  jenkins_plugin:
+    name: "{{ item }}"
+    jenkins_home: "{{ jenkins_home }}"
+    url_username: "{{ jenkins_admin_username }}"
+    url_password: "{{ jenkins_admin_password }}"
+    with_dependencies: true
+  with_items: "{{ jenkins_plugins }}"
+  notify: restart jenkins
+  register: plugin_result
+  until: plugin_result is success
+  retries: 3
+  delay: 2
+
+- name: copying Maven and locale config file
+  copy:
+    src: "{{ item }}"
+    dest: "{{ jenkins_home }}"
+    owner: "{{ jenkins_user }}"
+    group: "{{ jenkins_group }}"
+    mode: 0644
+  loop: [ 'hudson.tasks.Maven.xml', 'locale.xml' ]
+
+- name: restart jenkins after disable setup wizard
+  service:
+    name:  jenkins
+    state: restarted
+
+- name: "wait for HTTP 200 accessibility http://localhost:{{ jenkins_port }}"
+  uri:
+    url: "http://localhost:{{ jenkins_port }}/login?from=%2F"
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 5
+

@@ -6,29 +6,29 @@ jenkins_admin_password: !vault |
           30636465633537376432336330613263323133616661393735613162346636663432663963306437
           3336336431323133360a353638336661363033333636643539383030326635363933353734353136
           3934
+jenkins_admin_email: ok@ob.com
+jenkins_port: 8080
+jenkins_jobs_archive: jobs.tgz
+
 jenkins_home: /var/lib/jenkins
 jenkins_user: jenkins
 jenkins_group: jenkins
-
-jenkins_init_changes:
-  - option: "JENKINS_ARGS"
-    value: "--prefix={{ jenkins_url_prefix }}"
-  - option: "{{ jenkins_java_options_env_var }}"
-    value: "-Djenkins.install.runSetupWizard=false"
-
 
 jenkins_plugins:
   - "git"
   - "ant"
   - "github-branch-source"
-  - "ldap"
   - "pipeline"
   - "pipeline-github-lib"
   - "pipeline-stage-view"
   - "build-pipeline-plugin"
+  - "build-timeout"
+  - "maven-plugin"
+  - "workflow-aggregator"
+  - "locale"
+  - "ldap"
   - "ssh-slaves"
   - "email-ext"
-  - "build-timeout"
   - "matrix-auth"
   - "antisamy-markup-formatter"
   - "pam-auth"
@@ -39,15 +39,3 @@ jenkins_plugins:
   - "cloudbees-folder"
   - "subversion"
   - "mailer"
-  - "maven-plugin"
-  - "workflow-aggregator"
-
-#  - "workflow-aggregator"
-#github-branch-source
-#pipeline-github-lib
-#pipeline-stage-view
-#build-pipeline-plugin
-#conditional-buildstep
-#jenkins-multijob-plugin
-#parameterized-trigger
-#copyartifact
