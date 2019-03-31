@@ -1,3 +1,17 @@
 ---
-key_url: https://pkg.jenkins.io/debian/jenkins-ci.org.key
-jenkins_repo_url: deb https://pkg.jenkins.io/debian binary/
+# jenkins_repo_url: deb https://pkg.jenkins.io/debian binary/
+# jenkins_pkg_url: https://pkg.jenkins.io/debian/binary
+# key_url: https://pkg.jenkins.io/debian/jenkins-ci.org.key
+
+# For Debian (role default): +
+jenkins_repo_url_l: deb http://pkg.jenkins-ci.org/debian binary/
+jenkins_pkg_url_l: https://pkg.jenkins.io/debian/binary
+key_url_l: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
+# For Debian/Ubuntu LTS:
+jenkins_repo_url_s: deb http://pkg.jenkins-ci.org/debian-stable binary/
+jenkins_pkg_url_s: https://pkg.jenkins.io/debian-stable/binary
+key_url_s: http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key
+
+jenkins_repo_url: "{{ LTS | ternary( jenkins_repo_url_s, jenkins_repo_url_l) }}"
+jenkins_pkg_url: "{{ LTS | ternary( jenkins_pkg_url_s, jenkins_pkg_url_l) }}"
+key_url: "{{ LTS | ternary( key_url_s, key_url_l) }}"

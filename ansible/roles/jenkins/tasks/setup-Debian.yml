@@ -16,13 +16,27 @@
 
 - name: Install git and Jenkins
   apt:
-    name: "{{ item }}"
+    name: jenkins
     state: latest
-#    update_cache: yes
-    force: yes
-  loop:
-    - jenkins
-    - git
+  when: jenkins_version is not defined
+
+- name: Download specific Jenkins version.
+  get_url:
+    url: "{{ jenkins_pkg_url }}/jenkins_{{ jenkins_version }}_all.deb"
+    dest: "/tmp/jenkins_{{ jenkins_version }}_all.deb"
+  when: jenkins_version is defined
+
+- name: Check if we downloaded a specific version of Jenkins.
+  stat:
+    path: "/tmp/jenkins_{{ jenkins_version }}_all.deb"
+  register: specific_version
+  when: jenkins_version is defined
+
+- name: Install our specific version of Jenkins.
+  apt:
+    deb: "/tmp/jenkins_{{ jenkins_version }}_all.deb"
+    state: present
+  when: jenkins_version is defined and specific_version.stat.exists
 
 - name: enable jenkins
   systemd:
