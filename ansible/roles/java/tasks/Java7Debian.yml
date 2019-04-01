@@ -1,8 +1,7 @@
 ---
-# tasks file for Java 7 on Debian 
-
+# tasks file for Java 7 on Debian
 - name: install python-software-properties
-  apt: 
+  apt:
     name: python-software-properties
     state: present
 

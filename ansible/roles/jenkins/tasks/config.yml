@@ -15,10 +15,10 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: "{{ item.perm }}"
-  loop: 
+  loop:
     - { src: 'basic-security.groovy.j2', dest: 'init.groovy.d/basic-security.groovy', perm: '0755' }
     - { src: 'jenkins.model.JenkinsLocationConfiguration.xml.j2', dest: 'jenkins.model.JenkinsLocationConfiguration.xml', perm: '0644' }
-  
+
 - name: Unarchive jenkins job
   unarchive:
     src: "{{ jenkins_jobs_archive }}"

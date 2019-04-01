@@ -1,8 +1,5 @@
 ---
 # tasks file for java
-- debug:
-    msg: "online_jdk: {{ online_jdk }}, jdk_version: {{ jdk_version }}"
-
 - name: offline Java installiation - copying source from local dir
   include_tasks: offlineJava.yml
   when: not online_jdk

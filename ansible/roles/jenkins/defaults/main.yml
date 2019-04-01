@@ -9,8 +9,8 @@ jenkins_admin_password: !vault |
 jenkins_admin_email: ok@ob.com
 jenkins_port: 8080
 jenkins_jobs_archive: jobs.tgz
-LTS: true
-jenkins_version: 2.150.3
+LTS: false
+#jenkins_version: 2.150.3
 # 2.150.3 / 2.161
 jenkins_home: /var/lib/jenkins
 jenkins_user: jenkins
@@ -28,16 +28,16 @@ jenkins_plugins:
   - "maven-plugin"
   - "workflow-aggregator"
   - "locale"
-  - "ldap"
-  - "ssh-slaves"
-  - "email-ext"
-  - "matrix-auth"
-  - "antisamy-markup-formatter"
-  - "pam-auth"
-  - "timestamper"
-  - "svn-workspace-cleaner"
-  - "gradle"
-  - "credentials-binding"
-  - "cloudbees-folder"
-  - "subversion"
-  - "mailer"
+  # - "ldap"
+  # - "ssh-slaves"
+  # - "email-ext"
+  # - "matrix-auth"
+  # - "antisamy-markup-formatter"
+  # - "pam-auth"
+  # - "timestamper"
+  # - "svn-workspace-cleaner"
+  # - "gradle"
+  # - "credentials-binding"
+  # - "cloudbees-folder"
+  # - "subversion"
+  # - "mailer"
