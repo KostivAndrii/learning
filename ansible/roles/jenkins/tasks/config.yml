@@ -23,12 +23,8 @@
     group: "{{ jenkins_group }}"
     mode: "{{ item.perm }}"
   loop:
-    - src: 'basic-security.groovy.j2'
-      dest: 'init.groovy.d/basic-security.groovy'
-      perm: '0755'
-    - src: 'jenkins.model.JenkinsLocationConfiguration.xml.j2'
-      dest: 'jenkins.model.JenkinsLocationConfiguration.xml' 
-      perm: '0644'
+    - { src: 'basic-security.groovy.j2', dest: 'init.groovy.d/basic-security.groovy', perm: '0755' }
+    - { src: 'jenkins.model.JenkinsLocationConfiguration.xml.j2', dest: 'jenkins.model.JenkinsLocationConfiguration.xml', perm: '0644' }
 
 - name: "wait for HTTP 200 accessibility http://localhost:{{ jenkins_port }} - first time for apply user init"
   uri:
