@@ -6,7 +6,14 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0775
-  loop: [ 'init.groovy.d', 'jobs' ]
+  loop:
+    - init.groovy.d
+    - jobs
+
+- name: Unarchive jenkins job
+  unarchive:
+    src: "{{ jenkins_jobs_archive }}"
+    dest: "{{ jenkins_home }}/jobs/"
 
 - name: Copying default users script and jenkins init config
   template:
@@ -16,13 +23,12 @@
     group: "{{ jenkins_group }}"
     mode: "{{ item.perm }}"
   loop:
-    - { src: 'basic-security.groovy.j2', dest: 'init.groovy.d/basic-security.groovy', perm: '0755' }
-    - { src: 'jenkins.model.JenkinsLocationConfiguration.xml.j2', dest: 'jenkins.model.JenkinsLocationConfiguration.xml', perm: '0644' }
-
-- name: Unarchive jenkins job
-  unarchive:
-    src: "{{ jenkins_jobs_archive }}"
-    dest: "{{ jenkins_home }}/jobs/"
+    - src: 'basic-security.groovy.j2'
+      dest: 'init.groovy.d/basic-security.groovy'
+      perm: '0755'
+    - src: 'jenkins.model.JenkinsLocationConfiguration.xml.j2'
+      dest: 'jenkins.model.JenkinsLocationConfiguration.xml' 
+      perm: '0644'
 
 - name: "wait for HTTP 200 accessibility http://localhost:{{ jenkins_port }} - first time for apply user init"
   uri:

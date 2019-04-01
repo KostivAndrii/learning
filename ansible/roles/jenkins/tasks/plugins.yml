@@ -20,7 +20,7 @@
   with_items: "{{ jenkins_plugins }}"
   register: plugin_result
   until: plugin_result is success
-  retries: 3
+  retries: 30
   delay: 2
 
 - name: copying Maven and locale config file
