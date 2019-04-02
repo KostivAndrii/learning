@@ -9,10 +9,14 @@
       }
     user: "{{ jenkins_admin_username }}"
     password: "{{ jenkins_admin_password }}"
+  notify:
+    - restart jenkins
+    - wait for jenkins
 
 - name: Install Jenkins plugins using password.
   jenkins_plugin:
     name: "{{ item }}"
+    state: "{{ jenkins_plugins_state }}"
     jenkins_home: "{{ jenkins_home }}"
     url_username: "{{ jenkins_admin_username }}"
     url_password: "{{ jenkins_admin_password }}"
@@ -37,17 +41,19 @@
     name: git
     state: latest
 
-- name: restart jenkins after disable setup wizard
-  service:
-    name:  jenkins
-    state: restarted
+- meta: flush_handlers
 
-- name: "wait for HTTP 200 accessibility http://localhost:{{ jenkins_port }}"
-  uri:
-    url: "http://localhost:{{ jenkins_port }}/login?from=%2F"
-    status_code: 200
-  register: result
-  until: result.status == 200
-  retries: 60
-  delay: 5
+# - name: restart jenkins after disable setup wizard
+#   service:
+#     name:  jenkins
+#     state: restarted
+
+# - name: "wait for HTTP 200 accessibility http://localhost:{{ jenkins_port }}"
+#   uri:
+#     url: "http://localhost:{{ jenkins_port }}/login?from=%2F"
+#     status_code: 200
+#   register: result
+#   until: result.status == 200
+#   retries: 60
+#   delay: 5
 

@@ -48,3 +48,8 @@
     name: jenkins
     state: started
     enabled: yes
+  notify:
+    - wait for jenkins
+
+- name: make sure all handlers run
+  meta: flush_handlers

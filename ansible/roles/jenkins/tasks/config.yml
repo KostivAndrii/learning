@@ -25,29 +25,26 @@
   loop:
     - { src: 'basic-security.groovy.j2', dest: 'init.groovy.d/basic-security.groovy', perm: '0755' }
     - { src: 'jenkins.model.JenkinsLocationConfiguration.xml.j2', dest: 'jenkins.model.JenkinsLocationConfiguration.xml', perm: '0644' }
+  notify:
+    - restart jenkins
+    - wait for jenkins
 
-- name: "wait for HTTP 200 accessibility http://localhost:{{ jenkins_port }} - first time for apply user init"
-  uri:
-    url: "http://localhost:{{ jenkins_port }}/login?from=%2F"
-    status_code: 200
-  register: result
-  until: result.status == 200
-  retries: 30
-  delay: 10
+- name: make sure all handlers run
+  meta: flush_handlers
 
-- name: restart jenkins
-  service:
-    name:  jenkins
-    state: restarted
+# - name: restart jenkins
+#   service:
+#     name:  jenkins
+#     state: restarted
 
-- name: "wait for HTTP 200 accessibility http://localhost:{{ jenkins_port }}"
-  uri:
-    url: "http://localhost:{{ jenkins_port }}/login?from=%2F"
-    status_code: 200
-  register: result
-  until: result.status == 200
-  retries: 30
-  delay: 10
+# - name: "wait for HTTP 200 accessibility http://localhost:{{ jenkins_port }}"
+#   uri:
+#     url: "http://localhost:{{ jenkins_port }}/login?from=%2F"
+#     status_code: 200
+#   register: result
+#   until: result.status == 200
+#   retries: 30
+#   delay: 10
 
 - name: Remove Jenkins security init scripts after first startup.
   file:

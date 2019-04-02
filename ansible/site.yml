@@ -14,4 +14,4 @@
     online_jdk: false
     jdk_version: 8
     LTS: true
-    jenkins_version: 2.150.3
+#    jenkins_version: 2.150.3

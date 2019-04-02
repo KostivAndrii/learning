@@ -15,29 +15,32 @@ LTS: false
 jenkins_home: /var/lib/jenkins
 jenkins_user: jenkins
 jenkins_group: jenkins
+jenkins_plugins_state: present
 
 jenkins_plugins:
-  - "git"
-  - "ant"
-  - "github-branch-source"
-  - "pipeline"
-  - "pipeline-github-lib"
-  - "pipeline-stage-view"
-  - "build-pipeline-plugin"
-  - "build-timeout"
-  - "maven-plugin"
-  - "workflow-aggregator"
-  - "locale"
-  # - "ldap"
-  # - "ssh-slaves"
-  # - "email-ext"
-  # - "matrix-auth"
-  # - "antisamy-markup-formatter"
-  # - "pam-auth"
-  # - "timestamper"
-  # - "svn-workspace-cleaner"
-  # - "gradle"
-  # - "credentials-binding"
-  # - "cloudbees-folder"
-  # - "subversion"
-  # - "mailer"
+  - git
+  - github-branch-source
+  - pipeline
+  - pipeline-github-lib
+  - pipeline-stage-view
+  - build-pipeline-plugin
+  - build-timeout
+  - maven-plugin
+  - workflow-aggregator
+  - workflow-multibranch
+  - locale
+  - artifactory
+  # - ant
+  # - ldap
+  # - ssh-slaves
+  # - email-ext
+  # - matrix-auth
+  # - antisamy-markup-formatter
+  # - pam-auth
+  # - timestamper
+  # - svn-workspace-cleaner
+  # - gradle
+  # - credentials-binding
+  # - cloudbees-folder
+  # - subversion
+  # - mailer
