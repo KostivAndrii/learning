@@ -1,0 +1,37 @@
+---
+# tasks file for artifactory
+
+- name: Install wget
+  yum:
+    name: wget
+    state: latest
+
+- name: Download specific Artifactory version
+  get_url:
+    url: "{{ artifactory_url }}"
+    dest: "/tmp/jfrog-artifactory-oss-{{ artifactory_version }}.rpm"
+  when: artifactory_version is defined
+
+- name: Check if we downloaded a specific version of Artifactory
+  stat:
+    path: "/tmp/jfrog-artifactory-oss-{{ artifactory_version }}.rpm"
+  register: specific_version
+  when: artifactory_version is defined
+
+- name: Install our specific version of Artifactory
+  package:
+    name: "/tmp/jfrog-artifactory-oss-{{ artifactory_version }}.rpm"
+    state: present
+  when: artifactory_version is defined and specific_version.stat.exists
+
+- name: enable artifactory
+  systemd:
+    name: artifactory
+    enabled: true
+
+- name: start artifactory
+  service:
+    name: artifactory
+    state: started
+    enabled: yes
+

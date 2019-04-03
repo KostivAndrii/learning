@@ -12,8 +12,9 @@
 
 - name: Unarchive jenkins job
   unarchive:
-    src: "{{ jenkins_jobs_archive }}"
+    src: "{{ item }}"
     dest: "{{ jenkins_home }}/jobs/"
+  loop: "{{ jenkins_jobs_archive }}"
 
 - name: Copying default users script and jenkins init config
   template:

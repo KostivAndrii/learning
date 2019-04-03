@@ -2,9 +2,11 @@
 # illustration. These comments are overkill for most inventory files.
 
 [jenkins]
-#tomcat ansible_host=192.168.237.55
-ubuntu ansible_host=192.168.237.121
+#ubuntu ansible_host=192.168.237.121
 centos ansible_host=192.168.237.120
+
+[artifactory]
+artifact ansible_host=192.168.237.125
 
 # Variables that will be applied to all servers
 [all:vars]

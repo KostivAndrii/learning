@@ -9,9 +9,9 @@
       }
     user: "{{ jenkins_admin_username }}"
     password: "{{ jenkins_admin_password }}"
-  notify:
-    - restart jenkins
-    - wait for jenkins
+  # notify:
+  #   - restart jenkins
+  #   - wait for jenkins
 
 - name: Install Jenkins plugins using password.
   jenkins_plugin:
@@ -26,6 +26,9 @@
   until: plugin_result is success
   retries: 30
   delay: 2
+  notify:
+    - restart jenkins
+    - wait for jenkins
 
 - name: copying Maven and locale config file
   copy:
@@ -34,7 +37,7 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0644
-  loop: [ 'hudson.tasks.Maven.xml', 'locale.xml' ]
+  loop: [ 'hudson.tasks.Maven.xml', 'locale.xml', 'org.jfrog.hudson.ArtifactoryBuilder.xml', 'credentials.xml' ]
 
 - name: Install git
   yum:

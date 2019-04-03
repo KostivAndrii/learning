@@ -1,0 +1,6 @@
+---
+# defaults file for artifactory
+
+artifactory_version: "6.5.1"
+artifactory_url: https://jfrog.bintray.com/artifactory-rpms/jfrog-artifactory-oss-{{ artifactory_version }}.rpm
+

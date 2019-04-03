@@ -15,3 +15,12 @@
     jdk_version: 8
     LTS: true
 #    jenkins_version: 2.150.3
+
+- hosts: artifactory
+  become: yes
+  gather_facts: true
+  roles:
+    - artifactory
+  vars:
+    online_jdk: false
+    jdk_version: 8
