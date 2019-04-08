@@ -1,0 +1,3 @@
+[submodule "source/hello-world-servlet"]
+	path = source/hello-world-servlet
+	url = git@github.com:KostivAndrii/hello-world-servlet.git
