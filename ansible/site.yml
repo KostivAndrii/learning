@@ -22,5 +22,5 @@
   roles:
     - artifactory
   vars:
-    online_jdk: false
+    online_jdk: true
     jdk_version: 8
