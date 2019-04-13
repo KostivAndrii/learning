@@ -3,10 +3,13 @@
 
 [jenkins]
 #ubuntu ansible_host=192.168.237.121
-centos ansible_host=192.168.237.120
+#centos ansible_host=192.168.237.120
 
 [artifactory]
-artifact ansible_host=192.168.237.125
+artifact ansible_host=192.168.237.225
+
+[tomcat]
+tomcat ansible_host=192.168.237.126
 
 # Variables that will be applied to all servers
 [all:vars]

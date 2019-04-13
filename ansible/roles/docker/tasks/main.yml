@@ -1,0 +1,90 @@
+---
+# tasks file for docker
+
+- name: Install device-mapper-persistent-data
+  yum:
+    name: "{{ item }}"
+    state: latest
+  loop: 
+    [ epel-release, python-pip, yum-utils, device-mapper-persistent-data, lvm2 ]
+# , maven
+
+- easy_install:
+    name: pip
+    state: latest
+
+- name: Add Docker repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docer-ce.repo
+
+- name: Enable Docker Edge repo
+  ini_file:
+    dest: /etc/yum.repos.d/docer-ce.repo
+    section: 'docker-ce-edge'
+    option: enabled
+    value: 0
+
+- name: Enable Docker Test repo
+  ini_file:
+    dest: /etc/yum.repos.d/docer-ce.repo
+    section: 'docker-ce-test'
+    option: enabled
+    value: 0
+
+- name: Install Docker
+  package:
+    name: "{{ item }}"
+    state: latest
+  loop: 
+    [ docker-ce, docker-ce-cli, containerd.io ]
+
+- name: pip install docker-py
+  pip:
+    name: "{{ item }}"
+  loop: 
+    [ docker-py, awscli ]
+
+- name: Create custom init scripts and jobs directory
+  file:
+    path: /var/lib/jenkins/.aws
+    state: directory
+    mode: 0775
+    owner: tomcat
+    group: tomcat
+
+- name: coping aws credentials file
+  copy:
+    src: "{{ item }}"
+    dest: /var/lib/jenkins/.aws
+    owner: tomcat
+    group: tomcat
+    mode: 0600
+  loop: 
+    [ config, credentials ]
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Add user vagrant to docker group
+  user:
+    name: vagrant
+    groups: docker
+    append: yes
+  become: yes
+
+- name: pull an image
+  docker_image:
+    name: sonarqube
+
+- name: $ docker run -d --name sonarqube -p 9000:9000 sonarqube
+  docker_container:
+    name: sonarqube
+    image: sonarqube
+    state: started
+    ports:
+     - "9000:9000"

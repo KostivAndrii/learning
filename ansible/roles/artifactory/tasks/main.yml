@@ -24,6 +24,11 @@
     state: present
   when: artifactory_version is defined and specific_version.stat.exists
 
+- name: insert/update /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_host }}       artyfactory artyfactory"
+
 - name: enable artifactory
   systemd:
     name: artifactory

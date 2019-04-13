@@ -9,6 +9,7 @@
   loop:
     - init.groovy.d
     - jobs
+    - .aws
 
 - name: Unarchive jenkins job
   unarchive:
@@ -51,5 +52,11 @@
   file:
     path: "{{ jenkins_home }}/init.groovy.d/basic-security.groovy"
     state: absent
+
+- name: insert/update /etc/hosts 
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ hostvars[groups['artifactory'][0]].ansible_host }}       artyfactory artyfactory"
+
 
 

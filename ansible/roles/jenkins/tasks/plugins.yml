@@ -39,10 +39,12 @@
     mode: 0644
   loop: [ 'hudson.tasks.Maven.xml', 'locale.xml', 'org.jfrog.hudson.ArtifactoryBuilder.xml', 'credentials.xml' ]
 
-- name: Install git
+- name: Install git and maven
   yum:
-    name: git
+    name: "{{ item }}"
     state: latest
+  loop: 
+    [ git, maven ]
 
 - meta: flush_handlers
 

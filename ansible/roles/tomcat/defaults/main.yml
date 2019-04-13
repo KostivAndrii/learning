@@ -1,0 +1,15 @@
+---
+# vars file for tomcat
+
+tomcat_group:  tomcat
+tomcat_user:   tomcat
+
+online_tomcat: true
+
+tomcat_version: 8.5.39
+tomcat_folder: "apache-tomcat-{{ tomcat_version }}"
+tomcat_arch: "{{ tomcat_folder }}.tar.gz"
+tomcat_url:  "https://www-eu.apache.org/dist/tomcat/tomcat-8/v{{ tomcat_version }}/bin/{{ tomcat_arch }}"
+tomcat_dest: /opt/tomcat
+
+update_tomcat: true

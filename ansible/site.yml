@@ -10,6 +10,7 @@
   gather_facts: true
   roles:
     - jenkins
+    - docker
   vars:
     online_jdk: false
     jdk_version: 8
