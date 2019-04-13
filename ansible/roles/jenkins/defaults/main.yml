@@ -8,7 +8,7 @@ jenkins_admin_password: !vault |
   3934
 jenkins_admin_email: ok@ob.com
 jenkins_port: 8080
-jenkins_jobs_archive: [ 'jobs.tgz', 'mmbpa.tgz' ]
+jenkins_jobs_archive: [ 'jobs.tgz', 'masambp.tgz' ]
 LTS: false
 #jenkins_version: 2.150.3
 # 2.150.3 / 2.161
@@ -30,6 +30,7 @@ jenkins_plugins:
   - workflow-multibranch
   - locale
   - artifactory
+  - http_request
   # - ant
   # - ldap
   # - ssh-slaves

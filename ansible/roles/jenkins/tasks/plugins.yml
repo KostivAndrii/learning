@@ -9,9 +9,11 @@
       }
     user: "{{ jenkins_admin_username }}"
     password: "{{ jenkins_admin_password }}"
-  # notify:
-  #   - restart jenkins
-  #   - wait for jenkins
+  notify:
+    - restart jenkins
+    - wait for jenkins
+
+- meta: flush_handlers
 
 - name: Install Jenkins plugins using password.
   jenkins_plugin:
