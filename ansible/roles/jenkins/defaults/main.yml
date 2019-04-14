@@ -1,3 +1,6 @@
+---
+# vars file for jenkins
+
 jenkins_admin_username: admin
 jenkins_admin_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256

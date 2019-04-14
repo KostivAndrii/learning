@@ -1,5 +1,10 @@
 ---
 # tasks file for docker
+- name: Add group jenkins/aws
+  group: name={{ aws_group }} state=present
+
+- name: Add user jenkins/aws
+  user: name={{ aws_user }} group={{ aws_group }}
 
 - name: Install device-mapper-persistent-data
   yum:
@@ -7,7 +12,7 @@
     state: latest
   loop: 
     [ epel-release, python-pip, yum-utils, device-mapper-persistent-data, lvm2 ]
-# , maven
+# , maven - moved into jenkins
 
 - easy_install:
     name: pip
@@ -39,30 +44,36 @@
   loop: 
     [ docker-ce, docker-ce-cli, containerd.io ]
 
-- name: pip install docker-py
+- name: pip install docker-py and awscli
   pip:
     name: "{{ item }}"
   loop: 
     [ docker-py, awscli ]
 
-- name: Create custom init scripts and jobs directory
+- name: Create .aws directory
   file:
     path: /var/lib/jenkins/.aws
     state: directory
     mode: 0775
-    owner: tomcat
-    group: tomcat
+    owner: "{{ aws_user }}"
+    group: "{{ aws_group }}"
 
-- name: coping aws credentials file
+- name: copying aws config file
   copy:
-    src: "{{ item }}"
+    src: config
     dest: /var/lib/jenkins/.aws
-    owner: tomcat
-    group: tomcat
+    owner: "{{ aws_user }}"
+    group: "{{ aws_group }}"
     mode: 0600
-  loop: 
-    [ config, credentials ]
 
+- name: templating aws config file
+  template:
+    src: credentials.j2
+    dest: /var/lib/jenkins/.aws/credentials
+    owner: "{{ aws_user }}"
+    group: "{{ aws_group }}"
+    mode: 0600
+    
 - name: Start Docker service
   service:
     name: docker
