@@ -4,12 +4,12 @@
 # key_url: https://jenkins-ci.org/redhat/jenkins-ci.org.key
 
 # For RedHat/CentOS (last role default):
-#jenkins_repo_url_l: http://pkg.jenkins.io/redhat
-jenkins_repo_url_l: http://pkg.jenkins-ci.org/redhat/jenkins.repo
+#jenkins_repo_url_l: http://pkg.jenkins.io/redhat /jenkins.repo
+jenkins_repo_url_l: https://pkg.jenkins.io/redhat
 key_url_l: https://jenkins-ci.org/redhat/jenkins-ci.org.key
 # For RedHat/CentOS LTS:
 #jenkins_repo_url_s: http://pkg.jenkins.io/redhat-stable
-jenkins_repo_url_s: http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+jenkins_repo_url_s: https://pkg.jenkins.io/redhat-stable
 key_url_s: https://jenkins-ci.org/redhat/jenkins-ci.org.key
 
 jenkins_repo_url: "{{ LTS | ternary( jenkins_repo_url_s, jenkins_repo_url_l) }}"

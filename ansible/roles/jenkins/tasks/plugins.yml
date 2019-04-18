@@ -39,14 +39,15 @@
     owner: "{{ jenkins_user }}"
     group: "{{ jenkins_group }}"
     mode: 0644
-  loop: [ 'hudson.tasks.Maven.xml', 'locale.xml', 'org.jfrog.hudson.ArtifactoryBuilder.xml', 'credentials.xml' ]
+  loop: "{{ jenkins_plugin_config }}"
+#  loop: [ 'hudson.tasks.Maven.xml', 'locale.xml', 'org.jfrog.hudson.ArtifactoryBuilder.xml', 'credentials.xml' ]
 
 - name: Install git and maven
   yum:
     name: "{{ item }}"
     state: latest
   loop: 
-    [ git, maven ]
+    [ git, maven, wget ]
 
 - meta: flush_handlers
 

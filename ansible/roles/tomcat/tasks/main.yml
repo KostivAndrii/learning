@@ -7,11 +7,6 @@
 - name: Add user tomcat
   user: name={{ tomcat_user }} group={{ tomcat_group }}
 
-- name: insert/update /etc/hosts
-  lineinfile:
-    path: /etc/hosts
-    line: "{{ ansible_host }}       artyfactory artyfactory"
-
 - name: check tomcat folder if exist
   stat:
     path: "/opt/{{ tomcat_folder }}/"
@@ -54,13 +49,21 @@
     recurse: yes
     state: directory
 
+# - name: copying service file
+#   template:
+#     src: tomcat.service.j2
+#     dest: "/etc/systemd/system/tomcat.service"
+#     owner: root
+#     group: root
+#     mode: 0644
+
 - name: copying service file
   template:
-    src: tomcat.service.j2
-    dest: "/etc/systemd/system/tomcat.service"
+    src: tomcat.j2
+    dest: /etc/init.d/tomcat
     owner: root
     group: root
-    mode: 0644
+    mode: 0755
 
 - name: coping tomcat/conf/server.xml
   copy:
@@ -68,15 +71,23 @@
     dest: "{{ tomcat_dest }}/conf"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
-    mode: 0644
+    mode: 0600
 
-- name: coping tomcat/bin/setenv.sh
-  template:
-    src: setenv.sh.j2
-    dest: "{{ tomcat_dest }}/bin/setenv.sh"
+- name: copying tomcat-users.xml
+  template: 
+    src: tomcat-users.xml.j2 
+    dest: "{{ tomcat_dest }}/conf/tomcat-users.xml"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
-    mode: 0755
+    mode: 0600
+
+# - name: coping tomcat/bin/setenv.sh
+#   template:
+#     src: setenv.sh.j2
+#     dest: "{{ tomcat_dest }}/bin/setenv.sh"
+#     owner: "{{ tomcat_user }}"
+#     group: "{{ tomcat_group }}"
+#     mode: 0755
 
 # - name: "Delete folders {docs,examples,host-manager,ROOT}"
 #   file:

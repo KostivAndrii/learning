@@ -12,6 +12,15 @@ jenkins_admin_password: !vault |
 jenkins_admin_email: ok@ob.com
 jenkins_port: 8080
 jenkins_jobs_archive: [ 'jobs.tgz', 'masambp.tgz' ]
+jenkins_plugin_config: 
+  - 'hudson.tasks.Maven.xml'
+  - 'locale.xml'
+  - 'org.jfrog.hudson.ArtifactoryBuilder.xml'
+  - 'credentials.xml'
+  - 'hudson.plugins.sonar.SonarGlobalConfiguration.xml'
+  - 'hudson.plugins.sonar.SonarRunnerInstallation.xml'
+  - 'hudson.plugins.sonar.MsBuildSQRunnerInstallation.xml'
+
 LTS: false
 #jenkins_version: 2.150.3
 # 2.150.3 / 2.161
@@ -33,6 +42,7 @@ jenkins_plugins:
   - workflow-multibranch
   - locale
   - artifactory
+  - sonar
   - http_request
   # - ant
   # - ldap
