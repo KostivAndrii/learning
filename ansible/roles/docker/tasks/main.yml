@@ -97,14 +97,14 @@
     append: yes
   become: yes
 
-# - name: pull an image
-#   docker_image:
-#     name: sonarqube
+- name: pull an image
+  docker_image:
+    name: sonarqube
 
-# - name: $ docker run -d --name sonarqube -p 9000:9000 sonarqube
-#   docker_container:
-#     name: sonarqube
-#     image: sonarqube
-#     state: started
-#     ports:
-#      - "9000:9000"
+- name: $ docker run -d --name sonarqube -p 9000:9000 sonarqube
+  docker_container:
+    name: sonarqube
+    image: sonarqube
+    state: started
+    ports:
+     - "9000:9000"
