@@ -8,10 +8,15 @@
 
 - name: Install device-mapper-persistent-data
   yum:
+    name: epel-release
+    state: latest
+
+- name: Install device-mapper-persistent-data
+  yum:
     name: "{{ item }}"
     state: latest
-  loop: 
-    [ epel-release, python-pip, yum-utils, device-mapper-persistent-data, lvm2 ]
+  loop:
+    [ epel-release, python-pip, yum-utils, device-mapper-persistent-data, lvm2, ansible ]
 # , maven - moved into jenkins
 
 - easy_install:
@@ -41,14 +46,14 @@
   package:
     name: "{{ item }}"
     state: latest
-  loop: 
+  loop:
     [ docker-ce, docker-ce-cli, containerd.io ]
 
 - name: pip install docker-py and awscli
   pip:
     name: "{{ item }}"
-  loop: 
-    [ docker-py, awscli ]
+  loop:
+    [ docker-py, awscli, boto ]
 
 - name: Create .aws directory
   file:
@@ -60,20 +65,24 @@
 
 - name: copying aws config file
   copy:
-    src: config
+    src: "{{ item }}"
     dest: /var/lib/jenkins/.aws
     owner: "{{ aws_user }}"
     group: "{{ aws_group }}"
     mode: 0600
+  loop:
+    [ config, ec2.py, ec2.ini ]
 
 - name: templating aws config file
   template:
-    src: credentials.j2
+    src: "{{ item }}"
     dest: /var/lib/jenkins/.aws/credentials
     owner: "{{ aws_user }}"
     group: "{{ aws_group }}"
     mode: 0600
-    
+  loop:
+    [ credentials.j2, .credentials.j2 ]
+
 - name: Start Docker service
   service:
     name: docker
@@ -88,14 +97,14 @@
     append: yes
   become: yes
 
-- name: pull an image
-  docker_image:
-    name: sonarqube
+# - name: pull an image
+#   docker_image:
+#     name: sonarqube
 
-- name: $ docker run -d --name sonarqube -p 9000:9000 sonarqube
-  docker_container:
-    name: sonarqube
-    image: sonarqube
-    state: started
-    ports:
-     - "9000:9000"
+# - name: $ docker run -d --name sonarqube -p 9000:9000 sonarqube
+#   docker_container:
+#     name: sonarqube
+#     image: sonarqube
+#     state: started
+#     ports:
+#      - "9000:9000"

@@ -46,7 +46,7 @@
   yum:
     name: "{{ item }}"
     state: latest
-  loop: 
+  loop:
     [ git, maven, wget ]
 
 - meta: flush_handlers

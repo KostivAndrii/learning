@@ -11,8 +11,8 @@ jenkins_admin_password: !vault |
   3934
 jenkins_admin_email: ok@ob.com
 jenkins_port: 8080
-jenkins_jobs_archive: [ 'jobs.tgz', 'masambp.tgz' ]
-jenkins_plugin_config: 
+jenkins_jobs_archive: [ 'jobs.tgz', 'masambp.tgz', 'd_aws_t.tgz' ]
+jenkins_plugin_config:
   - 'hudson.tasks.Maven.xml'
   - 'locale.xml'
   - 'org.jfrog.hudson.ArtifactoryBuilder.xml'
@@ -44,6 +44,8 @@ jenkins_plugins:
   - artifactory
   - sonar
   - http_request
+  - deploy
+  - envinject
   # - ant
   # - ldap
   # - ssh-slaves
