@@ -3,18 +3,24 @@
 
 [jenkins]
 #ubuntu ansible_host=192.168.237.121
-#centos ansible_host=192.168.237.120
+centos ansible_host=192.168.237.120
 
 [artifactory]
-#artifact ansible_host=192.168.237.125
+artifact ansible_host=192.168.237.125
 
 [tomcat]
 #tomcat ansible_host=192.168.237.126
-aws_tomcat ansible_host=35.180.164.107
+#aws_tomcat ansible_host=35.180.164.107
+
+[zabbix-server]
+zabbix ansible_host=192.168.237.121
+
+[ntp]
+#ntp_centos ansible_host=192.168.237.111
 
 # Variables that will be applied to all servers
 [all:vars]
-#ansible_ssh_user=vagrant
-#ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
-ansible_ssh_user=ec2-user
-ansible_ssh_private_key_file=~/.ssh/aws-test-key.pem
+ansible_ssh_user=vagrant
+ansible_ssh_private_key_file=~/.vagrant.d/insecure_private_key
+#ansible_ssh_user=ec2-user
+#ansible_ssh_private_key_file=~/.ssh/aws-test-key.pem
