@@ -9,6 +9,7 @@ centos ansible_host=192.168.237.120
 artifact ansible_host=192.168.237.125
 
 [tomcat]
+<<<<<<< HEAD
 #tomcat ansible_host=192.168.237.126
 #aws_tomcat ansible_host=35.180.164.107
 
@@ -17,6 +18,10 @@ zabbix ansible_host=192.168.237.121
 
 [ntp]
 #ntp_centos ansible_host=192.168.237.111
+=======
+tomcat ansible_host=192.168.237.144
+#aws_tomcat ansible_host=34.217.134.59
+>>>>>>> 0089992a10d0fa82d611ca16bdc1061b11fd30dd
 
 # Variables that will be applied to all servers
 [all:vars]

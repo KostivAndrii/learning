@@ -1,7 +1,7 @@
 ---
 # vars file for jdk
 
-online_jdk: true
+online_jdk: false
 
 jdk_version: 8
 jdk_sub_version: 201

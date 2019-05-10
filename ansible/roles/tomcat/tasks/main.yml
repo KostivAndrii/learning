@@ -21,8 +21,8 @@
   when: not online_tomcat
 
 - name: tomcat | binary download
-  get_url: 
-    url: "{{ tomcat_url }}"  
+  get_url:
+    url: "{{ tomcat_url }}"
     dest: "/opt/{{ tomcat_arch }}"
   when: online_tomcat
 
@@ -65,17 +65,20 @@
     group: root
     mode: 0755
 
-- name: coping tomcat/conf/server.xml
+- name: coping tomcat/conf/ [ server.xml, context.xml ]
   copy:
-    src: server.xml
-    dest: "{{ tomcat_dest }}/conf"
+    src: "{{ item.file }}"
+    dest: "{{ tomcat_dest }}{{ item.path}}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
     mode: 0600
+  loop:
+    - { file: server.xml, path: "/conf/" }
+    - { file: context.xml, path: "/webapps/manager/META-INF/" }
 
 - name: copying tomcat-users.xml
-  template: 
-    src: tomcat-users.xml.j2 
+  template:
+    src: tomcat-users.xml.j2
     dest: "{{ tomcat_dest }}/conf/tomcat-users.xml"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
