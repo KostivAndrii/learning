@@ -8,11 +8,8 @@
 
 - name: Install zabbix agent and JMX monitoring
   yum: 
-    name:
-      - zabbix-agent
-      - zabbix-java-gateway
+    pkg: zabbix-agent
     state: present
-#    pkg: zabbix-agent zabbix-java-gateway
 
 - name: copying zabbix_agentd.conf
   template:
