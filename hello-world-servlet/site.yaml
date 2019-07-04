@@ -1,0 +1,14 @@
+---
+- hosts: tag_VM_Zabbix
+  become: yes
+  gather_facts: true
+  roles:
+    - zabbix
+
+- hosts: tag_VM_Tomcat
+  become: yes
+  gather_facts: true
+  roles:
+    - tomcat
+    - zabbix-agent
+
