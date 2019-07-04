@@ -1,0 +1,22 @@
+---
+# tasks file for ntp
+
+- name: Ensure ntp is installed
+  yum:
+    name: ntp
+    state: present
+
+- name: Start the zabbix-agent service
+  service:
+    name: ntpd
+    state: started
+    enabled: true
+
+- name: ntpdate pool.ntp.org; timedatectl set-timezone Europe/Kiev
+  shell: |
+    ntpdate pool.ntp.org
+    timedatectl set-timezone Europe/Kiev
+    timedatectl set-ntp true
+
+# - cron: name="ntp" minute="10" job="/usr/sbin/ntpdate pool.ntp.org"
+

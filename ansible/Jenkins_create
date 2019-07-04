@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+    stages {
+        stage ('Clone') {
+            steps {
+                echo "after assign *${env.DRY_RUN}*"                
+                git branch: 'master', url: "https://github.com/KostivAndrii/hello-world-servlet.git"
+            }
+        } 
+        stage ('Create AWS') {
+            steps {
+                echo 'Creating environment in AWS and CM Tomcat there'
+                sh 'pwd'
+                sh 'ls -la'
+                sh './aws_create.sh '
+            }
+        }      
+    }
+}
+
+
+withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'dev', variable: 'AWS_ACCESS_KEY_ID']]) {
+               sh "echo this is ${env.AWS_ACCESS_KEY_ID}"
+               sh "echo this is ${env.AWS_SECRET_ACCESS_KEY}"
+       }
+
+environment {
+    AWS_BIN = '/home/ec2-user/.local/bin/aws'
+}
+// ...
+stage('deploy') {
+    steps {
+        withCredentials([[
+            $class: 'AmazonWebServicesCredentialsBinding',
+            credentialsId: 'jenkins',
+            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+        ]]) {
+            sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=us-east-1 ${AWS_BIN} ecs update-service --cluster default --service test-deploy-svc --task-definition test-deploy:2 --desired-count 0'
+            sh 'sleep 1m' // SOOOO HACKY!!!
+            sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=us-east-1 ${AWS_BIN} ecs update-service --cluster default --service test-deploy-svc --task-definition test-deploy:2 --desired-count 1'
+        }
+    }
+}
