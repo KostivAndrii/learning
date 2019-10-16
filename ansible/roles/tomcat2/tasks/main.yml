@@ -1,0 +1,102 @@
+---
+# tasks file for tomcat
+
+    - name: Add group {{ tomcat_group }}
+      group:
+        name: "{{ tomcat_group }}"
+        state: present
+
+    - name: Add user {{ tomcat_user }}
+      user:
+        name: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+
+    # - stat:
+    #     path: "{{ tomcat_dest }}"
+    #   register: p
+
+    # - debug:
+    #     msg: "Path exists and is a directory"
+    #   when: p.stat.isdir is defined and p.stat.isdir
+
+    # - name: Folder "{{ tomcat_dest }}"
+    #   debug:
+    #     var: p
+
+    - name: Unarchive tomcat
+      unarchive:
+        src: "{{ tomcat_arch }}"
+        dest: "/opt"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        creates: "{{ tomcat_dest }}"
+
+    # - name: coping {{ tomcat_arch }}
+    #   copy:
+    #     src: "{{ tomcat_arch }}"
+    #     dest: "/opt"
+    #     owner: root
+    #     mode: 0644
+
+    # - name: Unarchive tomcat
+    #   unarchive:
+    #     src: "/opt/{{ tomcat_arch }}"
+    #     dest: "/opt"
+    #     remote_src: yes
+    #   when: update_tomcat
+
+    - name: "ln -s /opt/apache-tomcat-{{ tomcat_version }} /opt/tomcat"
+      file:
+        src: "/opt/apache-tomcat-{{ tomcat_version }}/"
+        dest: "{{ tomcat_dest }}"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        state: link
+
+    # - name: chmod -R /opt/tomcat
+    #   file:
+    #     path: "{{ tomcat_dest }}"
+    #     owner: "{{ tomcat_user }}"
+    #     group: "{{ tomcat_group }}"
+    #     recurse: yes
+    #     state: directory
+
+    - name: coping tomcat/conf/server.xml
+      copy:
+        src: server.xml
+        dest: "{{ tomcat_dest }}/conf"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: 0644
+
+    - name: coping tomcat/bin/setenv.sh
+      template:
+        src: setenv.sh.j2
+        dest: "{{ tomcat_dest }}/bin/setenv.sh"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: 0755
+
+    - name: copying service file
+      template:
+        src: tomcat.service.j2
+        dest: "/etc/systemd/system/tomcat.service"
+        owner: root
+        group: root
+        mode: 0644
+
+    # - name: "Delete folders {docs,examples,host-manager,ROOT}"
+    #   file:
+    #     path: "{{ tomcat_dest}}/webapps/{{ item }}"
+    #     state: absent
+    #   loop: [ docs, examples, host-manager, ROOT ]
+
+    - name: start & enable tomcat
+      service: name=tomcat state=started enabled=yes
+
+    - name: ensure port is open
+      wait_for:
+        host: 0.0.0.0
+        port: 8080
+        delay: 1
+        state: started

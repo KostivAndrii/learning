@@ -1,0 +1,11 @@
+---
+# vars file for tomcat
+
+# tomcat_group:  tomcat
+# tomcat_user:   tomcat
+
+# tomcat_version: 8.5.38
+# tomcat_arch: "apache-tomcat-{{ tomcat_version }}.tar.gz"
+# tomcat_dest: /opt/tomcat
+
+# update_tomcat: true

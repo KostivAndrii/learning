@@ -1,0 +1,12 @@
+---
+# tasks file for jdk
+
+- name: include jdk
+  include_tasks: jdk.yml
+  when: not openjdk
+
+- name: include openjdk
+  include_tasks: openjdk.yml
+  when: openjdk
+
+

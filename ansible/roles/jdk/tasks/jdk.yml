@@ -1,0 +1,26 @@
+---
+- name: Unarchive jdk
+  unarchive:
+    src: "{{ jdk_arch }}"
+    dest: "/opt"
+    owner: root
+    group: root
+    creates: "/opt/{{ jdk_arch }}"
+
+- name: "ln -s /opt/jdk1.8.0_* /opt/oracle_jdk"
+  file:
+    src: "/opt/jdk1.8.0_{{ jdk_version }}/"
+    dest: "{{ jdk_dest }}"
+    owner: root
+    group: root
+    state: link
+
+- name: alternatives link created {java, javac, jar}
+  alternatives:
+    name: "{{ item }}"
+    link: "/usr/bin/{{ item }}"
+    path: "/opt/oracle_jdk/bin/{{ item }}"
+    priority: 2
+  loop: [ java, javac, jar ]
+
+

@@ -1,0 +1,7 @@
+---
+dependencies:
+  - role: tomcat
+    vars:
+      openjdk: true
+      tomcat_group: otds
+      tomcat_user: otds

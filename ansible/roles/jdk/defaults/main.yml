@@ -1,0 +1,8 @@
+---
+# defaults file for jdk
+
+jdk_version: 201
+jdk_dest: /opt/oracle_jdk
+
+openjdk: false
+
