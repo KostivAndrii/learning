@@ -3,5 +3,6 @@ dependencies:
   - role: tomcat
     vars:
       openjdk: true
-      tomcat_group: otds
-      tomcat_user: otds
+      tomcat_user: "{{ otds_user }}"
+      tomcat_group: "{{ otds_group }}"
+      service_name: "{{ otds_service }}"

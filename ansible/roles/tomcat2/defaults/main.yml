@@ -3,6 +3,7 @@
 
 tomcat_group:  tomcat
 tomcat_user:   tomcat
+service_name:  tomcat
 
 #tomcat_version: 8.5.47
 tomcat_version: 9.0.0.M27

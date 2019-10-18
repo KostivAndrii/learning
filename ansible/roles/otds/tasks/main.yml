@@ -11,51 +11,47 @@
     #     name: "{{ tomcat_user }}"
     #     group: "{{ tomcat_group }}"
 
-    - name: "chown -R root: /opt/jdk1.8.0_*"
+    - name: "make otds_installer_path"
       file:
-        path: "/opt/jdk1.8.0_{{ jdk_version }}/"
-        owner: root
-        group: root
+        path: "{{ otds_installer_path }}"
+        owner: "{{ otds_user }}"
+        group: "{{ otds_group }}"
         state: directory
 
     - name: Unarchive otds-installer
       unarchive:
-        src: "{{ tomcat_arch }}"
-        dest: "/opt"
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        creates: "{{ tomcat_dest }}"
+        src: "{{ otds_file }}"
+        dest: "{{ otds_installer_path }}"
+        owner: "{{ otds_user }}"
+        group: "{{ otds_group }}"
+        # creates: "{{ otds_installer_path }}"
+        extra_opts: [--strip-components=1]
+
+    - name: "make otds_import_dir"
+      file:
+        path: "{{ otds_import_dir }}"
+        owner: "{{ otds_user }}"
+        group: "{{ otds_group }}"
+        state: directory
+      when: otds_import != 0
 
     - name: Unarchive import LDAP
       unarchive:
-        src: "{{ tomcat_arch }}"
-        dest: "/opt"
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        creates: "{{ tomcat_dest }}"
+        src: "{{ otds_import_file }}"
+        dest: "{{ otds_import_dir }}"
+        owner: "{{ otds_user }}"
+        group: "{{ otds_group }}"
+        # creates: "{{ otds_import_dir }}"
+        extra_opts: [--strip-components=1]
+      when: otds_import != 0
 
-
-    # - name: coping {{ tomcat_arch }}
-    #   copy:
-    #     src: "{{ tomcat_arch }}"
-    #     dest: "/opt"
-    #     owner: root
-    #     mode: 0644
-
-    # - name: Unarchive tomcat
-    #   unarchive:
-    #     src: "/opt/{{ tomcat_arch }}"
-    #     dest: "/opt"
-    #     remote_src: yes
-    #   when: update_tomcat
-
-    - name: "ln -s /opt/apache-tomcat-{{ tomcat_version }} /opt/tomcat"
-      file:
-        src: "/opt/apache-tomcat-{{ tomcat_version }}/"
-        dest: "{{ tomcat_dest }}"
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        state: link
+    # - name: "ln -s /opt/apache-tomcat-{{ tomcat_version }} /opt/tomcat"
+    #   file:
+    #     src: "/opt/apache-tomcat-{{ tomcat_version }}/"
+    #     dest: "{{ tomcat_dest }}"
+    #     owner: "{{ tomcat_user }}"
+    #     group: "{{ tomcat_group }}"
+    #     state: link
 
     # - name: chmod -R /opt/tomcat
     #   file:
@@ -65,42 +61,34 @@
     #     recurse: yes
     #     state: directory
 
-    - name: coping tomcat/conf/server.xml
-      copy:
-        src: server.xml
-        dest: "{{ tomcat_dest }}/conf"
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        mode: 0644
-
-    - name: coping tomcat/bin/setenv.sh
+    - name: coping otds_install.conf
       template:
-        src: setenv.sh.j2
-        dest: "{{ tomcat_dest }}/bin/setenv.sh"
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        mode: 0755
+        src: otds_install.conf.j2
+        dest: "{{ otds_installer_path }}/otds_install.conf"
+        owner: "{{ otds_user }}"
+        group: "{{ otds_group }}"
 
-    - name: copying service file
-      template:
-        src: tomcat.service.j2
-        dest: "/etc/systemd/system/tomcat.service"
-        owner: root
-        group: root
-        mode: 0644
+    - name: "test otds_dir/opendj"
+      stat:
+        path: "{{ otds_dir }}/opendj"
+      register: otds_installed
 
-    # - name: "Delete folders {docs,examples,host-manager,ROOT}"
-    #   file:
-    #     path: "{{ tomcat_dest}}/webapps/{{ item }}"
-    #     state: absent
-    #   loop: [ docs, examples, host-manager, ROOT ]
+    - name: "make otds_dir"
+      file:
+        path: "{{ otds_dir }}"
+        owner: "{{ otds_user }}"
+        group: "{{ otds_group }}"
+        state: directory
+      when: (otds_installed.stat.exists == False) or (otds_reinstall)
 
-    - name: start & enable tomcat
-      service: name=tomcat state=started enabled=yes
+    # - name: print otds_installed
+    #   debug:
+    #     var: otds_installed
 
-    - name: ensure port is open
-      wait_for:
-        host: 0.0.0.0
-        port: 8080
-        delay: 1
-        state: started
+    - name: install OTDS
+      command: "{{ otds_installer_path }}/setup -rf {{ otds_installer_path }}/otds_install.conf -qi -l {{ tomcat_dir }}/logs/otds-installer.log && touch"
+      # register: r
+      when: (otds_installed.stat.exists == False) or (otds_reinstall)
+
+    # - debug: var=ansible_facts
+# /opt/otds-installer/setup -rf /vagrant/otds_config.txt -qi -l /opt/tomcat/logs/otds-installer.log

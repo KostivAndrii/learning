@@ -1,15 +1,30 @@
 ---
 # defaults for otds
 
+otds_service: otds
 otds_user: otds
 otds_group: otds
-otds_dest: /opt/otds/
+otds_dir: /opt/otds
+tomcat_dir: /opt/tomcat
+otds_version: "16.2.2.1538"
+#otds_version: "16.4.2.2097"
+otds_patch: 2
+# otds_patch: 0
 
-otds_file: OTDS-1642-LNX6.tar
-#otds_file: OTDS-1622-LNX6.tar
-otds_iinstall_path: /opt/otds-install
+#otds_file: OTDS-1642-LNX6.tar
+otds_file: OTDS-1622-LNX6.tar
+otds_installer_path: /opt/otds-install
+
+otds_import: 0
 otds_import_file: import.tgz
-otds_import_path: /opt/otds-install/import
+otds_import_dir: /opt/otds-install/import
 
-otds_import: false
-otds_replication: false
+otds_reinstall: false
+otds_reinstall_backup_dir: ""
+
+otds_replication: 0
+primary_fqdn: ""
+rep_fqdn: ""
+
+#otds_admin: otadmin@otds.admin
+otds_admin_passwd: passwd
