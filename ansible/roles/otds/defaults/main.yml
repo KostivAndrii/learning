@@ -20,7 +20,7 @@ otds_import_file: import.tgz
 otds_import_dir: /opt/otds-install/import
 
 otds_reinstall: false
-otds_reinstall_backup_dir: ""
+otds_reinstall_backup_dir: "/opt/backup"
 
 otds_replication: 0
 primary_fqdn: ""

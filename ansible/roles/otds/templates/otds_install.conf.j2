@@ -1,0 +1,29 @@
+
+[Setup]
+Id=OTDS
+Version={{ otds_version }}
+Patch={{ otds_patch }}
+Basedir={{ otds_installer_path }}
+Configfile={{ otds_installer_path }}/setup.xml
+Action=Install
+Log=
+Instance=1
+Feature=All
+
+[Property]
+INST_GROUP={{ otds_group }}
+INST_USER={{ otds_user }}
+INSTALL_DIR={{ otds_dir }}
+APPSRVTYPE=tomcat
+REPLICATION=0
+TOMCAT_DIR={{ tomcat_dir }}
+LDAP_ADMINPORT=4440
+LDAP_COMPORT=1389
+OTDS_PASS={{ otds_admin_passwd }}
+IMPORT_DATA={{ otds_replication }}
+IMPORT_DATADIR={{ otds_import_dir }}
+PRIMARY_FQDN={{ primary_fqdn }}
+PRIMARY_ADMINPORT=4440
+OTDS_PRIMARY_PASS={{ otds_admin_passwd }}
+REP_FQDN={{ rep_fqdn }}
+LDAP_REPPORT=8989

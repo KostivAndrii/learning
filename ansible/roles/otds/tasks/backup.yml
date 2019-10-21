@@ -1,0 +1,125 @@
+---
+# tasks file for tomcat
+
+    # - name: Add group {{ tomcat_group }}
+    #   group:
+    #     name: "{{ tomcat_group }}"
+    #     state: present
+
+    # - name: Add user {{ tomcat_user }}
+    #   user:
+    #     name: "{{ tomcat_user }}"
+    #     group: "{{ tomcat_group }}"
+
+    - name: "test otds_dir"
+      stat:
+        path: "{{ item }}"
+      loop: [ "{{ otds_dir }}","{{ otds_installer_path }}", "{{ tomcat_dir }}/conf/Catalina/localhost", /etc/opentext ]
+      register: backup_dirs
+
+    - debug: msg="{{ lookup('env','HOME') }} is an environment variable"
+    - debug: msg="{{ lookup('pipe','date') }} is the raw result of running this command"
+
+    # - name: Print testing results
+    #   debug: var=backup_dirs
+
+    - name: Parsing testing results
+      debug: var=item
+        # msg: "Current folder {{ item.item }} is present"
+      # when: item.stat.exists
+      with_items: "{{backup_dirs|json_query('results[*].{item:item, value:stat.exists}')}}"
+      # with_items: "{{backup_dirs|json_query('results[*].item')}}"
+# IS {{ backup_dirs.results.stat.exists }}"
+# "{{backup_dirs|json_query('results[*].item')}}"
+
+    # - name: Parsing testing results
+    #   debug:
+    #     msg: "Current folder {{ item.item }} is present"
+    #   when: item.stat.exists
+    #   with_items: "{{ backup_dirs.results }}"
+
+    - name: "make backup dir"
+      file:
+        path: "{{ otds_reinstall_backup_dir }}"
+        owner: "{{ otds_user }}"
+        group: "{{ otds_group }}"
+        state: directory
+
+    # - name: Print testing results
+    #   command: mv {{ item}}
+
+
+#     - name: "backup previous version otds"
+#       include_tasks: backup.yml
+#       when: (otds_installed.stat.exists) and (otds_reinstall)
+
+
+#     - name: Unarchive otds-installer
+#       unarchive:
+#         src: "{{ otds_file }}"
+#         dest: "{{ otds_installer_path }}"
+#         owner: "{{ otds_user }}"
+#         group: "{{ otds_group }}"
+#         # creates: "{{ otds_installer_path }}"
+#         extra_opts: [--strip-components=1]
+
+#     - name: "make otds_import_dir"
+#       file:
+#         path: "{{ otds_import_dir }}"
+#         owner: "{{ otds_user }}"
+#         group: "{{ otds_group }}"
+#         state: directory
+#       when: otds_import != 0
+
+#     - name: Unarchive import LDAP
+#       unarchive:
+#         src: "{{ otds_import_file }}"
+#         dest: "{{ otds_import_dir }}"
+#         owner: "{{ otds_user }}"
+#         group: "{{ otds_group }}"
+#         # creates: "{{ otds_import_dir }}"
+#         extra_opts: [--strip-components=1]
+#       when: otds_import != 0
+
+#     # - name: "ln -s /opt/apache-tomcat-{{ tomcat_version }} /opt/tomcat"
+#     #   file:
+#     #     src: "/opt/apache-tomcat-{{ tomcat_version }}/"
+#     #     dest: "{{ tomcat_dest }}"
+#     #     owner: "{{ tomcat_user }}"
+#     #     group: "{{ tomcat_group }}"
+#     #     state: link
+
+#     # - name: chmod -R /opt/tomcat
+#     #   file:
+#     #     path: "{{ tomcat_dest }}"
+#     #     owner: "{{ tomcat_user }}"
+#     #     group: "{{ tomcat_group }}"
+#     #     recurse: yes
+#     #     state: directory
+
+#     - name: coping otds_install.conf
+#       template:
+#         src: otds_install.conf.j2
+#         dest: "{{ otds_installer_path }}/otds_install.conf"
+#         owner: "{{ otds_user }}"
+#         group: "{{ otds_group }}"
+
+#     - name: "make otds_dir"
+#       file:
+#         path: "{{ otds_dir }}"
+#         owner: "{{ otds_user }}"
+#         group: "{{ otds_group }}"
+#         state: directory
+#       when: (otds_installed.stat.exists == False) or (otds_reinstall)
+
+#     # - name: print otds_installed
+#     #   debug:
+#     #     var: otds_installed
+
+#     - name: install OTDS
+#       command: "{{ otds_installer_path }}/setup -rf {{ otds_installer_path }}/otds_install.conf -qi -l {{ tomcat_dir }}/logs/otds-installer.log && touch"
+#       # register: r
+#       when: (otds_installed.stat.exists == False) or (otds_reinstall)
+
+#     # - debug: var=ansible_facts
+# # /opt/otds-installer/setup -rf /vagrant/otds_config.txt -qi -l /opt/tomcat/logs/otds-installer.log

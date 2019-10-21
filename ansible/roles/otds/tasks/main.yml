@@ -10,6 +10,14 @@
     #   user:
     #     name: "{{ tomcat_user }}"
     #     group: "{{ tomcat_group }}"
+    - name: "test otds_dir/opendj"
+      stat:
+        path: "{{ otds_dir }}/opendj"
+      register: otds_installed
+
+    - name: backup previous version otds
+      import_tasks: backup.yml
+      # when: (otds_installed.stat.exists) and (otds_reinstall)
 
     - name: "make otds_installer_path"
       file:
@@ -67,11 +75,6 @@
         dest: "{{ otds_installer_path }}/otds_install.conf"
         owner: "{{ otds_user }}"
         group: "{{ otds_group }}"
-
-    - name: "test otds_dir/opendj"
-      stat:
-        path: "{{ otds_dir }}/opendj"
-      register: otds_installed
 
     - name: "make otds_dir"
       file:
