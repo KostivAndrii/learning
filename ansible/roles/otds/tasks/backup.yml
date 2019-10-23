@@ -1,42 +1,63 @@
 ---
-# tasks file for tomcat
+# tasks file for backup otds
 
-    # - name: Add group {{ tomcat_group }}
-    #   group:
-    #     name: "{{ tomcat_group }}"
-    #     state: present
+    # test if backupdir is present and fail (or drop/clear it)
+    - name: "test previous backup dir {{ otds_reinstall_backup_dir }}"
+      stat:
+        path: "{{ otds_reinstall_backup_dir }}"
+      register: old_backup_dirs
 
-    # - name: Add user {{ tomcat_user }}
-    #   user:
-    #     name: "{{ tomcat_user }}"
-    #     group: "{{ tomcat_group }}"
+    - name: print old_backup_dirs
+      debug:
+        var: old_backup_dirs
 
-    - name: "test otds_dir"
+    - name: fail if previous backup dir not empty and (not drop_previous_backup_dir)
+      fail:
+        msg: "Backup dir {{ otds_reinstall_backup_dir }} is present"
+      when: old_backup_dirs.stat.exists and not drop_previous_backup_dir
+
+    - name: "drop previous  {{ otds_reinstall_backup_dir }} dir"
+      file:
+        path: "{{ otds_reinstall_backup_dir }}"
+        state: absent
+
+    # if there is previous OTDS - export LDAP (if otds_reimport_ldap = true)
+    - name: make export old LDAP database
+      block:
+      - name: "drop previous {{ otds_import_tmp_dir }} dir"
+        file:
+          path: "{{ otds_import_tmp_dir }}"
+          state: absent
+
+      - name: "make {{ otds_import_tmp_dir }} dir"
+        file:
+          path: "{{ otds_import_tmp_dir }}"
+          owner: "{{ otds_user }}"
+          group: "{{ otds_group }}"
+          state: directory
+
+      - name: "export ldif from previous installation to {{ otds_import_tmp_dir }}"
+        command: "{{ otds_dir }}/opendj/bin/export-ldif -h localhost -p 4440 -D \"cn=Directory Manager\" --ldifFile {{ otds_import_tmp_dir }}/otds-16.ldif  --backendID userRoot --appendToLDIF   --bindPassword {{ otds_admin_old_passwd }} --trustAll --noPropertiesFile"
+        when: otds_reimport_ldap
+
+      - name: copy config.ldif from {{ otds_dir }}/opendj/config/ to {{ otds_import_tmp_dir }}
+        copy:
+          src: "{{ otds_dir }}/opendj/config/config.ldif"
+          dest: "{{ otds_import_tmp_dir }}/config.ldif"
+          remote_src: yes
+      when: otds_reimport_ldap
+
+    # - name: "drop previous backup dir"
+    #   file:
+    #     path: "{{ otds_reinstall_backup_dir }}"
+    #     state: absent
+
+    # test if present previous otds instalation dirs and backup them
+    - name: "test previous otds_dirs"
       stat:
         path: "{{ item }}"
       loop: [ "{{ otds_dir }}","{{ otds_installer_path }}", "{{ tomcat_dir }}/conf/Catalina/localhost", /etc/opentext ]
       register: backup_dirs
-
-    - debug: msg="{{ lookup('env','HOME') }} is an environment variable"
-    - debug: msg="{{ lookup('pipe','date') }} is the raw result of running this command"
-
-    # - name: Print testing results
-    #   debug: var=backup_dirs
-
-    - name: Parsing testing results
-      debug: var=item
-        # msg: "Current folder {{ item.item }} is present"
-      # when: item.stat.exists
-      with_items: "{{backup_dirs|json_query('results[*].{item:item, value:stat.exists}')}}"
-      # with_items: "{{backup_dirs|json_query('results[*].item')}}"
-# IS {{ backup_dirs.results.stat.exists }}"
-# "{{backup_dirs|json_query('results[*].item')}}"
-
-    # - name: Parsing testing results
-    #   debug:
-    #     msg: "Current folder {{ item.item }} is present"
-    #   when: item.stat.exists
-    #   with_items: "{{ backup_dirs.results }}"
 
     - name: "make backup dir"
       file:
@@ -45,81 +66,22 @@
         group: "{{ otds_group }}"
         state: directory
 
-    # - name: Print testing results
-    #   command: mv {{ item}}
+    - name: Backuping previous instalation into {{ otds_reinstall_backup_dir }}
+      command: "mv {{ item.path }} {{ otds_reinstall_backup_dir }}"
+      when: item.present
+      loop: "{{backup_dirs|json_query('results[*].{path:item, present:stat.exists}')}}"
+      # with_items: "{{backup_dirs|json_query('results[*].item')}}"
 
+    # - name: "make otds_installer_path"
+    #   file:
+    #     path: "{{ otds_installer_path }}"
+    #     owner: "{{ otds_user }}"
+    #     group: "{{ otds_group }}"
+    #     state: directory
 
-#     - name: "backup previous version otds"
-#       include_tasks: backup.yml
-#       when: (otds_installed.stat.exists) and (otds_reinstall)
-
-
-#     - name: Unarchive otds-installer
-#       unarchive:
-#         src: "{{ otds_file }}"
-#         dest: "{{ otds_installer_path }}"
-#         owner: "{{ otds_user }}"
-#         group: "{{ otds_group }}"
-#         # creates: "{{ otds_installer_path }}"
-#         extra_opts: [--strip-components=1]
-
-#     - name: "make otds_import_dir"
-#       file:
-#         path: "{{ otds_import_dir }}"
-#         owner: "{{ otds_user }}"
-#         group: "{{ otds_group }}"
-#         state: directory
-#       when: otds_import != 0
-
-#     - name: Unarchive import LDAP
-#       unarchive:
-#         src: "{{ otds_import_file }}"
-#         dest: "{{ otds_import_dir }}"
-#         owner: "{{ otds_user }}"
-#         group: "{{ otds_group }}"
-#         # creates: "{{ otds_import_dir }}"
-#         extra_opts: [--strip-components=1]
-#       when: otds_import != 0
-
-#     # - name: "ln -s /opt/apache-tomcat-{{ tomcat_version }} /opt/tomcat"
-#     #   file:
-#     #     src: "/opt/apache-tomcat-{{ tomcat_version }}/"
-#     #     dest: "{{ tomcat_dest }}"
-#     #     owner: "{{ tomcat_user }}"
-#     #     group: "{{ tomcat_group }}"
-#     #     state: link
-
-#     # - name: chmod -R /opt/tomcat
-#     #   file:
-#     #     path: "{{ tomcat_dest }}"
-#     #     owner: "{{ tomcat_user }}"
-#     #     group: "{{ tomcat_group }}"
-#     #     recurse: yes
-#     #     state: directory
-
-#     - name: coping otds_install.conf
-#       template:
-#         src: otds_install.conf.j2
-#         dest: "{{ otds_installer_path }}/otds_install.conf"
-#         owner: "{{ otds_user }}"
-#         group: "{{ otds_group }}"
-
-#     - name: "make otds_dir"
-#       file:
-#         path: "{{ otds_dir }}"
-#         owner: "{{ otds_user }}"
-#         group: "{{ otds_group }}"
-#         state: directory
-#       when: (otds_installed.stat.exists == False) or (otds_reinstall)
-
-#     # - name: print otds_installed
-#     #   debug:
-#     #     var: otds_installed
-
-#     - name: install OTDS
-#       command: "{{ otds_installer_path }}/setup -rf {{ otds_installer_path }}/otds_install.conf -qi -l {{ tomcat_dir }}/logs/otds-installer.log && touch"
-#       # register: r
-#       when: (otds_installed.stat.exists == False) or (otds_reinstall)
-
-#     # - debug: var=ansible_facts
-# # /opt/otds-installer/setup -rf /vagrant/otds_config.txt -qi -l /opt/tomcat/logs/otds-installer.log
+    # restart OTDS (tomcat) to release LDAP ports
+    - name: restart {{ otds_service }}
+      service:
+        name: "{{ otds_service }}"
+        state: restarted
+        enabled: yes

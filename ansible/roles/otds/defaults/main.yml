@@ -6,21 +6,27 @@ otds_user: otds
 otds_group: otds
 otds_dir: /opt/otds
 tomcat_dir: /opt/tomcat
-otds_version: "16.2.2.1538"
-#otds_version: "16.4.2.2097"
-otds_patch: 2
-# otds_patch: 0
-
-#otds_file: OTDS-1642-LNX6.tar
-otds_file: OTDS-1622-LNX6.tar
 otds_installer_path: /opt/otds-install
 
-otds_import: 0
+# otds_version: "16.2.2.1538"
+# otds_patch: 2
+# otds_file: OTDS-1622-LNX6.tar
+
+otds_version: "16.4.2.2097"
+otds_patch: 0
+otds_file: OTDS-1642-LNX6.tar
+
+otds_import_data: 16
 otds_import_file: import.tgz
 otds_import_dir: /opt/otds-install/import
 
-otds_reinstall: false
-otds_reinstall_backup_dir: "/opt/backup"
+# otds_reinstall: true
+# if false and dir is present - role will failed
+drop_previous_backup_dir: true
+otds_reinstall_backup_dir: "/opt/backup_otds"
+otds_import_tmp_dir: /opt/import
+# if true - will be used exported ldif instead import.tgz
+otds_reimport_ldap: true
 
 otds_replication: 0
 primary_fqdn: ""
@@ -28,3 +34,4 @@ rep_fqdn: ""
 
 #otds_admin: otadmin@otds.admin
 otds_admin_passwd: passwd
+otds_admin_old_passwd: passwd

@@ -10,14 +10,18 @@
     #   user:
     #     name: "{{ tomcat_user }}"
     #     group: "{{ tomcat_group }}"
-    - name: "test otds_dir/opendj"
+
+    - name: "test if otds is installed: check /etc/opentext/unixsetup/OTDS_parameters_1.txt"
       stat:
-        path: "{{ otds_dir }}/opendj"
+        path: "/etc/opentext/unixsetup/OTDS_parameters_1.txt"
       register: otds_installed
 
+    # - debug: var=otds_installed
+
+    # backup or drop previous instalation
     - name: backup previous version otds
       import_tasks: backup.yml
-      # when: (otds_installed.stat.exists) and (otds_reinstall)
+      when: otds_installed.stat.exists
 
     - name: "make otds_installer_path"
       file:
@@ -35,40 +39,37 @@
         # creates: "{{ otds_installer_path }}"
         extra_opts: [--strip-components=1]
 
-    - name: "make otds_import_dir"
-      file:
-        path: "{{ otds_import_dir }}"
-        owner: "{{ otds_user }}"
-        group: "{{ otds_group }}"
-        state: directory
-      when: otds_import != 0
+    # if (otds_import_data != 0) prepare ldif files from previous OTDS ot from import.tgz
+    - name: prepare data for import
+      block:
+      - name: "make otds_import_dir"
+        file:
+          path: "{{ otds_import_dir }}"
+          owner: "{{ otds_user }}"
+          group: "{{ otds_group }}"
+          state: directory
 
-    - name: Unarchive import LDAP
-      unarchive:
-        src: "{{ otds_import_file }}"
-        dest: "{{ otds_import_dir }}"
-        owner: "{{ otds_user }}"
-        group: "{{ otds_group }}"
-        # creates: "{{ otds_import_dir }}"
-        extra_opts: [--strip-components=1]
-      when: otds_import != 0
+      # prepare import ldif from import.tgz
+      - name: Unarchive import LDAP
+        unarchive:
+          src: "{{ otds_import_file }}"
+          dest: "{{ otds_import_dir }}"
+          owner: "{{ otds_user }}"
+          group: "{{ otds_group }}"
+          extra_opts: [--strip-components=1]
+        when: not otds_installed.stat.exists
 
-    # - name: "ln -s /opt/apache-tomcat-{{ tomcat_version }} /opt/tomcat"
-    #   file:
-    #     src: "/opt/apache-tomcat-{{ tomcat_version }}/"
-    #     dest: "{{ tomcat_dest }}"
-    #     owner: "{{ tomcat_user }}"
-    #     group: "{{ tomcat_group }}"
-    #     state: link
+      - name: Move exporting ldif into import folder (from previous OTDS)
+        command: "mv {{ otds_import_tmp_dir }}/config.ldif {{ otds_import_dir }}/"
+        when: otds_installed.stat.exists and otds_reimport_ldap
 
-    # - name: chmod -R /opt/tomcat
-    #   file:
-    #     path: "{{ tomcat_dest }}"
-    #     owner: "{{ tomcat_user }}"
-    #     group: "{{ tomcat_group }}"
-    #     recurse: yes
-    #     state: directory
+      - name: Move exporting ldif into import folder (from previous OTDS)
+        command: "mv {{ otds_import_tmp_dir }}/otds-16.ldif {{ otds_import_dir }}/"
+        when: otds_installed.stat.exists and otds_reimport_ldap
 
+      when: (otds_import_data != 0)
+
+    # prepare silent install config file
     - name: coping otds_install.conf
       template:
         src: otds_install.conf.j2
@@ -76,22 +77,23 @@
         owner: "{{ otds_user }}"
         group: "{{ otds_group }}"
 
+    # install OTDS
+    - name: "drop previous  {{ otds_dir }} dir"
+      file:
+        path: "{{ otds_dir }}"
+        state: absent
+
     - name: "make otds_dir"
       file:
         path: "{{ otds_dir }}"
         owner: "{{ otds_user }}"
         group: "{{ otds_group }}"
         state: directory
-      when: (otds_installed.stat.exists == False) or (otds_reinstall)
-
-    # - name: print otds_installed
-    #   debug:
-    #     var: otds_installed
 
     - name: install OTDS
-      command: "{{ otds_installer_path }}/setup -rf {{ otds_installer_path }}/otds_install.conf -qi -l {{ tomcat_dir }}/logs/otds-installer.log && touch"
+      command: "{{ otds_installer_path }}/setup -rf {{ otds_installer_path }}/otds_install.conf -qi -l {{ tomcat_dir }}/logs/otds-installer.log"
       # register: r
-      when: (otds_installed.stat.exists == False) or (otds_reinstall)
 
     # - debug: var=ansible_facts
 # /opt/otds-installer/setup -rf /vagrant/otds_config.txt -qi -l /opt/tomcat/logs/otds-installer.log
+# /opt/otds-install/setup -rf /opt/otds-install/otds_install.conf -qi -l /opt/tomcat/logs/otds-installer.log
