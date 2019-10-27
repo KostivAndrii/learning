@@ -8,13 +8,13 @@ otds_dir: /opt/otds
 tomcat_dir: /opt/tomcat
 otds_installer_path: /opt/otds-install
 
-# otds_version: "16.2.2.1538"
-# otds_patch: 2
-# otds_file: OTDS-1622-LNX6.tar
+otds_version: "16.2.2.1538"
+otds_patch: 2
+otds_file: OTDS-1622-LNX6.tar
 
-otds_version: "16.4.2.2097"
-otds_patch: 0
-otds_file: OTDS-1642-LNX6.tar
+# otds_version: "16.4.2.2097"
+# otds_patch: 0
+# otds_file: OTDS-1642-LNX6.tar
 
 otds_import_data: 16
 otds_import_file: import.tgz
@@ -29,8 +29,11 @@ otds_import_tmp_dir: /opt/import
 otds_reimport_ldap: true
 
 otds_replication: 0
-primary_fqdn: ""
-rep_fqdn: ""
+primary_fqdn: "otds.local"
+primary_IP:   "192.168.237.50"
+rep_fqdn:     "otds2.local"
+rep_IP:       "192.168.237.51"
+
 
 #otds_admin: otadmin@otds.admin
 otds_admin_passwd: passwd
