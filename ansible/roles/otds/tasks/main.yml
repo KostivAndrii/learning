@@ -16,6 +16,15 @@
         path: "/etc/opentext/unixsetup/OTDS_parameters_1.txt"
       register: otds_installed
 
+    - name: Add IP address of all hosts to all hosts
+      lineinfile:
+        dest: /etc/hosts
+        line: "{{ item.IP }} {{ item.hostname }}"
+        state: present
+      loop:
+        - { hostname: "{{ primary_fqdn }}", IP: "{{ primary_IP }}"}
+        - { hostname: "{{ rep_fqdn }}", IP: "{{ rep_IP }}"}
+
     # - debug: var=otds_installed
 
     # backup or drop previous instalation
